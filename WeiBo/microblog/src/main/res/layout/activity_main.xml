@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/ll_title"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorWhite"
+        android:orientation="horizontal"
+        android:shadowColor="@color/colorGrayWhite"
+        android:shadowDy="1"
+        android:shadowRadius="1">
+
+    </LinearLayout>
+
+    <!--<fragment-->
+        <!--android:id="@+id/main_fragment"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_above="@+id/bottombar"-->
+        <!--android:layout_below="@+id/ll_title">-->
+        <!---->
+    <!--</fragment>-->
+
+    <include
+        android:id="@+id/bottombar"
+        layout="@layout/bottom_bar" />
+
+
+</RelativeLayout>

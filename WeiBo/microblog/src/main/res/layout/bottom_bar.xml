@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_bottombar"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:layout_alignParentBottom="true"
+    android:background="@color/colorWhite"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    android:shadowColor="@color/colorGrayWhite"
+    android:shadowDy="1"
+    android:shadowRadius="1">
+
+    <RelativeLayout
+        android:id="@+id/rl_home"
+        style="@style/BottomBarRelativeLayoutStyle">
+
+        <ImageView
+            android:id="@+id/iv_home"
+            style="@style/BottomBarImageStyle"
+            android:focusableInTouchMode="false"
+            android:src="@drawable/selector_bottom_bar_home" />
+
+        <TextView
+            android:id="@+id/tv_home"
+            style="@style/BottomBarTextStyle"
+            android:layout_below="@id/iv_home"
+            android:focusableInTouchMode="false"
+            android:text="微博" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_message"
+        style="@style/BottomBarRelativeLayoutStyle">
+
+        <ImageView
+            android:id="@+id/iv_message"
+            style="@style/BottomBarImageStyle"
+            android:src="@drawable/selector_bottom_bar_message" />
+
+        <TextView
+            android:id="@+id/tv_message"
+            style="@style/BottomBarTextStyle"
+            android:layout_below="@+id/iv_message"
+            android:text="消息" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_add"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
+
+        <ImageView
+            android:id="@+id/iv_add"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/selector_shape_square"
+            android:padding="3dp"
+            android:src="@drawable/tabbar_compose_icon_add" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_discover"
+        style="@style/BottomBarRelativeLayoutStyle">
+
+        <ImageView
+            android:id="@+id/iv_discover"
+            style="@style/BottomBarImageStyle"
+            android:src="@drawable/selector_bottom_bar_discover" />
+
+        <TextView
+            android:id="@+id/tv_discover"
+            style="@style/BottomBarTextStyle"
+            android:layout_below="@id/iv_discover"
+            android:text="发现" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_me"
+        style="@style/BottomBarRelativeLayoutStyle">
+
+        <ImageView
+            android:id="@+id/iv_me"
+            style="@style/BottomBarImageStyle"
+            android:src="@drawable/selector_bottom_bar_me" />
+
+        <TextView
+            android:id="@+id/tv_me"
+            style="@style/BottomBarTextStyle"
+            android:layout_below="@id/iv_me"
+            android:text="我" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>
