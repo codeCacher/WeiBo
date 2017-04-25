@@ -1,5 +1,8 @@
 package com.cs.microblog.activity;
 
+
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
@@ -8,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.cs.microblog.R;
+import com.cs.microblog.fragment.HomeUnloginFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +40,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
         BindViews();
         SetItemOnTouchListener();
-
-
     }
 
     /**
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private void BindViews() {
         imageViewList = new ArrayList<>();
         iv_home = (ImageView) findViewById(R.id.iv_home);
+        iv_home.setSelected(true);
         imageViewList.add(iv_home);
         iv_message = (ImageView) findViewById(R.id.iv_message);
         imageViewList.add(iv_message);
@@ -105,6 +108,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             case MotionEvent.ACTION_UP:
                 CancelSelectAll();
                 iv_home.setSelected(true);
+                HomeUnloginFragment fragmentHome = new HomeUnloginFragment();
+                FragmentManager fragmentHomeManager = getSupportFragmentManager();
+                FragmentTransaction fragmentHomeTransaction = fragmentHomeManager.beginTransaction();
+                fragmentHomeTransaction.add(R.id.ll_fragment,fragmentHome);
+                fragmentHomeTransaction.commit();
                 break;
         }
     }
