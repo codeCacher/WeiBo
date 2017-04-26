@@ -1,20 +1,36 @@
 package com.cs.microblog.activity;
 
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.cs.microblog.R;
+import com.cs.microblog.custom.AccessTokenEntity;
+import com.cs.microblog.custom.AccessTokenService;
+import com.cs.microblog.custom.Constants;
+import com.cs.microblog.custom.GetHomeTimelineService;
+import com.cs.microblog.custom.HomeTimelineList;
 import com.cs.microblog.fragment.HomeUnloginFragment;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Administrator on 2017/4/23.
@@ -22,6 +38,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
 
+    private static final String TAG = "MainActivity";
     private ImageView iv_home;
     private ImageView iv_message;
     private ImageView iv_discover;
@@ -32,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private RelativeLayout rl_message;
     private RelativeLayout rl_discover;
     private RelativeLayout rl_me;
+    private HomeUnloginFragment mFragmentUnloginHome;
+    private FragmentManager mFragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +59,54 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
         BindViews();
         SetItemOnTouchListener();
+
+        //TODO 抽取SP工具类
+        SharedPreferences sp = getSharedPreferences(Constants.SP_FILE_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        String token = sp.getString(Constants.KEY_ACCESS_TOKEN, "");
+        if(TextUtils.isEmpty(token)){
+            showUnloginHomeFragment();
+        } else {
+            Log.i(TAG, token);
+
+            //TODO 抽取网络请求方法
+            //POST and get the Access Token
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl("https://api.weibo.com/")
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            GetHomeTimelineService getHomeTimelineService = retrofit.create(GetHomeTimelineService.class);
+            Call<HomeTimelineList> accessToken = getHomeTimelineService.getHomeTimelineList(token);
+            accessToken.enqueue(new Callback<HomeTimelineList>() {
+                @Override
+                public void onResponse(Call<HomeTimelineList> call, Response<HomeTimelineList> response) {
+                    Log.i(TAG,response.body().toString());
+                    //TODO 获取到了微博列表
+                }
+
+                @Override
+                public void onFailure(Call<HomeTimelineList> call, Throwable t) {
+                    Log.i(TAG,t.toString());
+                }
+            });
+        }
+    }
+
+    private void showUnloginHomeFragment() {
+        CancelSelectAll();
+        iv_home.setSelected(true);
+        if (mFragmentUnloginHome == null) {
+            mFragmentUnloginHome = new HomeUnloginFragment();
+            mFragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentHomeTransaction = mFragmentManager.beginTransaction();
+            fragmentHomeTransaction.add(R.id.ll_fragment, mFragmentUnloginHome);
+            fragmentHomeTransaction.commit();
+        } else {
+            FragmentTransaction fragmentHomeTransaction = mFragmentManager.beginTransaction();
+            fragmentHomeTransaction.show(mFragmentUnloginHome);
+            fragmentHomeTransaction.commit();
+        }
+
     }
 
     /**
@@ -59,7 +126,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private void BindViews() {
         imageViewList = new ArrayList<>();
         iv_home = (ImageView) findViewById(R.id.iv_home);
-        iv_home.setSelected(true);
         imageViewList.add(iv_home);
         iv_message = (ImageView) findViewById(R.id.iv_message);
         imageViewList.add(iv_message);
@@ -101,24 +167,20 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     /**
      * Process the home item touch event
+     *
      * @param event touch event
      */
     private void BottomBarHomeTouchProcess(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_UP:
-                CancelSelectAll();
-                iv_home.setSelected(true);
-                HomeUnloginFragment fragmentHome = new HomeUnloginFragment();
-                FragmentManager fragmentHomeManager = getSupportFragmentManager();
-                FragmentTransaction fragmentHomeTransaction = fragmentHomeManager.beginTransaction();
-                fragmentHomeTransaction.add(R.id.ll_fragment,fragmentHome);
-                fragmentHomeTransaction.commit();
+                showUnloginHomeFragment();
                 break;
         }
     }
 
     /**
      * Process the message item touch event
+     *
      * @param event touch event
      */
     private void BottomBarMessageTouchProcess(MotionEvent event) {
@@ -132,6 +194,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     /**
      * Process the discover item touch event
+     *
      * @param event touch event
      */
     private void BottomBarDiscoverTouchProcess(MotionEvent event) {
@@ -145,6 +208,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     /**
      * Process the me item touch event
+     *
      * @param event touch event
      */
     private void BottomBarMeTouchProcess(MotionEvent event) {
@@ -158,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
 
     /**
      * Process the add item touch event
+     *
      * @param event touch event
      */
     private void BottomBarAddTouchProcess(MotionEvent event) {
@@ -180,6 +245,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 imageViewList) {
             iv.setSelected(false);
         }
+    }
+
+
+    public static void openMainActivity(Context context, int flag) {
+        context.startActivity(new Intent(context, MainActivity.class).setFlags(flag));
     }
 
 }

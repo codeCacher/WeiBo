@@ -1,5 +1,7 @@
 package com.cs.microblog.activity;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebSettings;
@@ -14,6 +16,12 @@ import com.cs.microblog.custom.LoginWebViewClient;
  */
 
 public class WebViewActivity extends AppCompatActivity {
+    private static final String JUMP_URL = "jumpUrl";
+
+    public static void openUrl(Context context, String url) {
+        context.startActivity(new Intent(context,WebViewActivity.class).putExtra(JUMP_URL,url));
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,7 +33,6 @@ public class WebViewActivity extends AppCompatActivity {
         settings.setSaveFormData(false);
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         wv.setWebViewClient(new LoginWebViewClient(this));
-        String url = Constants.AUTHORIZE_URL + "?" + Constants.NAME_CLIENT_ID + "=" + Constants.APP_KEY + "&" + Constants.NAME_REDIRECT_URI + "=" + Constants.REDIRECT_URI;
-        wv.loadUrl(url);
+        wv.loadUrl(getIntent().getStringExtra(JUMP_URL));
     }
 }

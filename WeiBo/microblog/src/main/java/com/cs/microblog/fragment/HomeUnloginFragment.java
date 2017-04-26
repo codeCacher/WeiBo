@@ -8,11 +8,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cs.microblog.R;
 import com.cs.microblog.activity.WebViewActivity;
+import com.cs.microblog.custom.Constants;
 
 /**
  * Created by Administrator on 2017/4/25.
@@ -28,8 +30,8 @@ public class HomeUnloginFragment extends Fragment {
         tv_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), WebViewActivity.class);
-                startActivity(intent);
+                String url = Constants.AUTHORIZE_URL + "?" + Constants.NAME_CLIENT_ID + "=" + Constants.APP_KEY + "&" + Constants.NAME_REDIRECT_URI + "=" + Constants.REDIRECT_URI;
+                WebViewActivity.openUrl(getContext(),url);
             }
         });
         return view;
