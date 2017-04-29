@@ -21,7 +21,9 @@ import com.cs.microblog.custom.AccessTokenService;
 import com.cs.microblog.custom.Constants;
 import com.cs.microblog.custom.GetHomeTimelineService;
 import com.cs.microblog.custom.HomeTimelineList;
+import com.cs.microblog.fragment.HomeFragment;
 import com.cs.microblog.fragment.HomeUnloginFragment;
+import com.cs.microblog.utils.SharedPreferencesUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,10 +62,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         BindViews();
         SetItemOnTouchListener();
 
-        //TODO 抽取SP工具类
-        SharedPreferences sp = getSharedPreferences(Constants.SP_FILE_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = sp.edit();
-        String token = sp.getString(Constants.KEY_ACCESS_TOKEN, "");
+        //get the token from sp
+        String token = SharedPreferencesUtils.getString(this,Constants.KEY_ACCESS_TOKEN, "");
         if(TextUtils.isEmpty(token)){
             showUnloginHomeFragment();
         } else {
@@ -82,6 +82,11 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
                 public void onResponse(Call<HomeTimelineList> call, Response<HomeTimelineList> response) {
                     Log.i(TAG,response.body().toString());
                     //TODO 获取到了微博列表
+                    HomeFragment mHomeFragment = new HomeFragment(response.body().getStatuses());
+                    mFragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentHomeTransaction = mFragmentManager.beginTransaction();
+                    fragmentHomeTransaction.add(R.id.ll_fragment, mHomeFragment);
+                    fragmentHomeTransaction.commit();
                 }
 
                 @Override

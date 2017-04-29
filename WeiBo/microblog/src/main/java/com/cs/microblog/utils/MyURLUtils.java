@@ -1,4 +1,6 @@
-package com.cs.microblog.custom;
+package com.cs.microblog.utils;
+
+import com.cs.microblog.custom.Constants;
 
 import java.net.URL;
 

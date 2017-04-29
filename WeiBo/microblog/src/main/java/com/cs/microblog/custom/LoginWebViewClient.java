@@ -9,6 +9,8 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import com.cs.microblog.activity.MainActivity;
+import com.cs.microblog.utils.MyURLUtils;
+import com.cs.microblog.utils.SharedPreferencesUtils;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -50,12 +52,9 @@ public class LoginWebViewClient extends WebViewClient {
                         System.out.println("" + response.body().toString());
                         AccessTokenEntity accessTokenEntity = response.body();
                         //Write Token into the sp file
-                        SharedPreferences sp = context.getSharedPreferences(Constants.SP_FILE_NAME,Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sp.edit();
-                        editor.putString(Constants.KEY_ACCESS_TOKEN,accessTokenEntity.getAccess_token());
-                        editor.putInt(Constants.KEY_EXPIRES_IN,accessTokenEntity.getExpires_in());
-                        editor.putString(Constants.KEY_UID,accessTokenEntity.getUid());
-                        editor.apply();
+                        SharedPreferencesUtils.putString(context,Constants.KEY_ACCESS_TOKEN,accessTokenEntity.getAccess_token());
+                        SharedPreferencesUtils.putInt(context,Constants.KEY_EXPIRES_IN,accessTokenEntity.getExpires_in());
+                        SharedPreferencesUtils.putString(context,Constants.KEY_UID,accessTokenEntity.getUid());
 
                         Toast.makeText(context,"登录成功", Toast.LENGTH_SHORT).show();
                         MainActivity.openMainActivity(context, Intent.FLAG_ACTIVITY_CLEAR_TOP);

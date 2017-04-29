@@ -6,7 +6,7 @@ import java.util.List;
  * Created by Administrator on 2017/4/27.
  */
 
-class Statuse {
+public class Statuse {
     private String original_pic;
     private String created_at;
     private long id;

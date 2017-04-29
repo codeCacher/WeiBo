@@ -6,10 +6,7 @@
     android:layout_alignParentBottom="true"
     android:background="@color/colorWhite"
     android:baselineAligned="false"
-    android:orientation="horizontal"
-    android:shadowColor="@color/colorGrayWhite"
-    android:shadowDy="1"
-    android:shadowRadius="1">
+    android:orientation="horizontal">
 
     <RelativeLayout
         android:id="@+id/rl_home"
