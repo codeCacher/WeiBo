@@ -10,8 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.cs.microblog.R;
-import com.cs.microblog.custom.AdapterBlogItem;
+import com.cs.microblog.adapter.AdapterBlogItem;
 import com.cs.microblog.custom.Statuse;
+
+import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2017/4/27.
@@ -19,9 +21,9 @@ import com.cs.microblog.custom.Statuse;
 
 public class HomeFragment extends Fragment {
 
-    private Statuse[] statuse;
+    private ArrayList<Statuse> statuse;
 
-    public HomeFragment(Statuse[] statuse) {
+    public HomeFragment(ArrayList<Statuse> statuse) {
         this.statuse = statuse;
     }
 

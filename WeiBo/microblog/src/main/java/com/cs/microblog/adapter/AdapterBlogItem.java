@@ -1,29 +1,37 @@
-package com.cs.microblog.custom;
+package com.cs.microblog.adapter;
 
 import android.content.Context;
+import android.graphics.Rect;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.cs.microblog.R;
+import com.cs.microblog.custom.Statuse;
 import com.cs.microblog.utils.TimeUtils;
+import com.cs.microblog.view.BlogItemBottomButtonView;
 import com.cs.microblog.view.CircleImageView;
 import com.squareup.picasso.Picasso;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
  * Created by Administrator on 2017/4/28.
+ * Blog item adapter
  */
 
 public class AdapterBlogItem extends RecyclerView.Adapter<AdapterBlogItem.ViewHolderBlogItem> {
     private static final String TAG = "AdapterBlogItem";
     private Context context;
-    private Statuse[] statuses;
+    private ArrayList<Statuse> statuses;
 
-    public AdapterBlogItem(Context context, Statuse[] statuses) {
+    public AdapterBlogItem(Context context, ArrayList<Statuse> statuses) {
         this.context = context;
         this.statuses = statuses;
     }
@@ -38,16 +46,51 @@ public class AdapterBlogItem extends RecyclerView.Adapter<AdapterBlogItem.ViewHo
 
         String blogInfo = parseBlogInfo(position);
 
-        Picasso.with(context).load(statuses[position].getUser().getProfile_image_url()).into(holder.iv_blogTitle);
-        holder.getTv_userName().setText(statuses[position].getUser().getName());
-        holder.getTv_blogText().setText(statuses[position].getText());
+        Picasso.with(context).load(statuses.get(position).getUser().getProfile_image_url()).into(holder.iv_blogTitle);
+        holder.getTv_userName().setText(statuses.get(position).getUser().getName());
+        holder.getTv_blogText().setText(statuses.get(position).getText());
         holder.getTv_blogInfo().setText(blogInfo);
+        holder.getBibbv_repost().setText(getCountText(statuses.get(position).getReposts_count(),"转发"));
+        holder.getBibbv_comment().setText(getCountText(statuses.get(position).getComments_count(),"评论"));
+        holder.getBibbv_like().setText(getCountText(statuses.get(position).getAttitudes_count(),"赞"));
+
+        setPictures(holder, position);
     }
 
-    private String parseBlogInfo(int postition) {
+    private void setPictures(ViewHolderBlogItem holder, int position) {
+        //set picture recycler view
+        PictureAdapter pGAdapter = new PictureAdapter(context,statuses.get(position).getPic_urls(),holder.getRv_picture());
+        holder.getRv_picture().setAdapter(pGAdapter);
+
+        //different picture number,different style
+        int columNumber;
+        switch (statuses.get(position).getPic_urls().size()){
+            case 1:
+                columNumber = 1;
+                break;
+            case 4:
+                columNumber = 2;
+                break;
+            default:
+                columNumber = 3;
+                break;
+        }
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, columNumber, LinearLayoutManager.VERTICAL, false);
+        holder.getRv_picture().setLayoutManager(gridLayoutManager);
+    }
+
+    private String getCountText(int count,String defaultText) {
+        if(count==0) {
+            return defaultText;
+        }else {
+            return Integer.toString(count);
+        }
+    }
+
+    private String parseBlogInfo(int position) {
 
         //parse the create time
-        String created_at = statuses[postition].getCreated_at();
+        String created_at = statuses.get(position).getCreated_at();
         StringBuffer blogInfo = new StringBuffer();
         Calendar current = Calendar.getInstance();
         Calendar creatCalendar;
@@ -81,7 +124,7 @@ public class AdapterBlogItem extends RecyclerView.Adapter<AdapterBlogItem.ViewHo
 
         //parse the source
         blogInfo.append(" 来自 ");
-        String fullSource = statuses[postition].getSource();
+        String fullSource = statuses.get(position).getSource();
         String source = fullSource.substring(fullSource.indexOf(">") + 1, fullSource.lastIndexOf("<"));
         blogInfo.append(source);
 
@@ -90,15 +133,19 @@ public class AdapterBlogItem extends RecyclerView.Adapter<AdapterBlogItem.ViewHo
 
     @Override
     public int getItemCount() {
-        return statuses.length;
+        return statuses.size();
     }
 
     class ViewHolderBlogItem extends RecyclerView.ViewHolder {
 
-        private CircleImageView iv_blogTitle;
-        private TextView tv_userName;
-        private TextView tv_blogInfo;
-        private TextView tv_blogText;
+        private final CircleImageView iv_blogTitle;
+        private final TextView tv_userName;
+        private final TextView tv_blogInfo;
+        private final TextView tv_blogText;
+        private final BlogItemBottomButtonView bibbv_repost;
+        private final BlogItemBottomButtonView bibbv_comment;
+        private final BlogItemBottomButtonView bibbv_like;
+        private final RecyclerView rv_picture;
 
         ViewHolderBlogItem(View itemView) {
             super(itemView);
@@ -106,38 +153,43 @@ public class AdapterBlogItem extends RecyclerView.Adapter<AdapterBlogItem.ViewHo
             tv_userName = (TextView) itemView.findViewById(R.id.tv_user_name);
             tv_blogInfo = (TextView) itemView.findViewById(R.id.tv_blog_info);
             tv_blogText = (TextView) itemView.findViewById(R.id.tv_blog_text);
+            bibbv_repost = (BlogItemBottomButtonView) itemView.findViewById(R.id.bibbv_repost);
+            bibbv_comment = (BlogItemBottomButtonView) itemView.findViewById(R.id.bibbv_comment);
+            bibbv_like = (BlogItemBottomButtonView) itemView.findViewById(R.id.bibbv_like);
+            rv_picture = (RecyclerView) itemView.findViewById(R.id.rv_picture);
         }
 
+        //Getter and Setter
         public CircleImageView getIv_blogTitle() {
             return iv_blogTitle;
-        }
-
-        public void setIv_blogTitle(CircleImageView iv_blogTitle) {
-            this.iv_blogTitle = iv_blogTitle;
         }
 
         public TextView getTv_userName() {
             return tv_userName;
         }
 
-        public void setTv_userName(TextView tv_userName) {
-            this.tv_userName = tv_userName;
-        }
-
         public TextView getTv_blogInfo() {
             return tv_blogInfo;
         }
 
-        public void setTv_blogInfo(TextView tv_blogInfo) {
-            this.tv_blogInfo = tv_blogInfo;
-        }
-
-        TextView getTv_blogText() {
+        public TextView getTv_blogText() {
             return tv_blogText;
         }
 
-        public void setTv_blogText(TextView tv_blogText) {
-            this.tv_blogText = tv_blogText;
+        public BlogItemBottomButtonView getBibbv_repost() {
+            return bibbv_repost;
+        }
+
+        public BlogItemBottomButtonView getBibbv_comment() {
+            return bibbv_comment;
+        }
+
+        public BlogItemBottomButtonView getBibbv_like() {
+            return bibbv_like;
+        }
+
+        public RecyclerView getRv_picture() {
+            return rv_picture;
         }
     }
 }

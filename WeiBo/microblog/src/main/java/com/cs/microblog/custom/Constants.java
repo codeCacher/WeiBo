@@ -12,11 +12,27 @@ public class Constants {
     public static final String REDIRECT_URI = "https://api.weibo.com/oauth2/default.html";
     public static final String HOME_TIMELINE_URL = "https://api.weibo.com/2/statuses/home_timeline.json";
 
-    // SharedPreferences file name
+    /**
+     * SharedPreferences file name
+     */
     public static final String SP_FILE_NAME = "cfg_sp";
+
     // SharedPreferences keys
+    /**
+     * oauth2/access_token
+     * access token shared preference key
+     */
     public static final String KEY_ACCESS_TOKEN = "access_token";
+    /**
+     * oauth2/access_token
+     * expires_in shared preference key
+     * the life cycle of access_token
+     */
     public static final String KEY_EXPIRES_IN = "expires_in";
+    /**
+     * oauth2/access_token
+     * uid shared preference key
+     */
     public static final String KEY_UID = "uid";
 
     public static final String APP_KEY = "3605082758";
@@ -30,4 +46,6 @@ public class Constants {
     public static final String NAME_REDIRECT_URI = "redirect_uri";
     public static final String NAME_CLIENT_SECRET = "client_secret";
     public static final String NAME_GRANT_TYPE= "grant_type";
+
+    public static final String ATTRS_NAMESPACE="http://schemas.android.com/apk/com.cs.microblog";
 }

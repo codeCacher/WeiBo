@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    xmlns:weibo="http://schemas.android.com/apk/com.cs.microblog"
     android:layout_marginTop="5dp"
-    android:layout_height="30dp">
+    android:orientation="vertical"
+    android:layout_height="35dp">
 
     <View
         android:id="@+id/v"
@@ -12,85 +14,42 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/v">
+        android:layout_height="match_parent">
 
-        <RelativeLayout
+        <com.cs.microblog.view.BlogItemBottomButtonView
+            android:id="@+id/bibbv_repost"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:gravity="center"
-            android:layout_height="match_parent" >
+            weibo:image_src="@drawable/artical_detail_icon_repost"
+            weibo:text="转发"
+            android:layout_height="match_parent"/>
 
-            <ImageView
-                android:id="@+id/iv_repost"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:src="@drawable/artical_detail_icon_repost"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
+        <View
+            android:background="@drawable/blog_item_bottombar_cut_line_shape"
+            android:layout_width="1px"
+            android:layout_height="match_parent"/>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_toRightOf="@id/iv_repost"
-                android:text="转发"
-                android:textSize="12sp"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:layout_height="match_parent" />
+        <com.cs.microblog.view.BlogItemBottomButtonView
+            android:layout_width="0dp"
+            android:id="@+id/bibbv_comment"
+            android:layout_weight="1"
+            weibo:image_src="@drawable/artical_detail_icon_comment"
+            weibo:text="评论"
+            android:layout_height="match_parent"/>
+        <View
+            android:background="@drawable/blog_item_bottombar_cut_line_shape"
+            android:layout_width="1px"
+            android:layout_height="match_parent"/>
 
-        </RelativeLayout>
-
-        <RelativeLayout
+        <com.cs.microblog.view.BlogItemBottomButtonView
+            android:id="@+id/bibbv_like"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:gravity="center"
-            android:layout_height="match_parent" >
-
-            <ImageView
-                android:id="@+id/iv_comment"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:src="@drawable/artical_detail_icon_comment"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_toRightOf="@id/iv_comment"
-                android:text="评论"
-                android:textSize="12sp"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:layout_height="match_parent" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:layout_height="match_parent" >
-
-            <ImageView
-                android:id="@+id/iv_like"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:src="@drawable/artical_detail_icon_like"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_toRightOf="@id/iv_like"
-                android:text="赞"
-                android:textSize="12sp"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:layout_height="match_parent" />
-
-        </RelativeLayout>
+            weibo:image_src="@drawable/artical_detail_icon_like"
+            weibo:text="赞"
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 
 
-</RelativeLayout>
+</LinearLayout>

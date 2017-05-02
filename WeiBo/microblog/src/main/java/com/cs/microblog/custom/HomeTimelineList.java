@@ -2,6 +2,7 @@ package com.cs.microblog.custom;
 
 import android.database.Cursor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,11 +11,9 @@ import java.util.List;
 
 public class HomeTimelineList {
     private int total_number;
+    private ArrayList<Statuse> statuses;
 
-    //TODO 是否有更好的方法
-    private Statuse[] statuses;
-    private Advertisement[] ad;
-
+    //Getter and Setter
     public int getTotal_number() {
         return total_number;
     }
@@ -23,19 +22,11 @@ public class HomeTimelineList {
         this.total_number = total_number;
     }
 
-    public Statuse[] getStatuses() {
+    public ArrayList<Statuse> getStatuses() {
         return statuses;
     }
 
-    public void setStatuses(Statuse[] statuses) {
+    public void setStatuses(ArrayList<Statuse> statuses) {
         this.statuses = statuses;
-    }
-
-    public Advertisement[] getAd() {
-        return ad;
-    }
-
-    public void setAd(Advertisement[] ad) {
-        this.ad = ad;
     }
 }

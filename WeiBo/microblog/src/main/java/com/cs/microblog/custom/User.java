@@ -4,7 +4,7 @@ package com.cs.microblog.custom;
  * Created by Administrator on 2017/4/27.
  */
 
-class User {
+public class User{
     private long id;
     private String screen_name;
     private String name;
