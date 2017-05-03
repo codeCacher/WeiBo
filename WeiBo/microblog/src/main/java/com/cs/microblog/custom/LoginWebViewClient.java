@@ -2,7 +2,6 @@ package com.cs.microblog.custom;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -33,7 +32,7 @@ public class LoginWebViewClient extends WebViewClient {
     @Override
     public void onPageStarted(WebView view, String url, Bitmap favicon) {
         super.onPageStarted(view, url, favicon);
-        if (url.contains(Constants.REDIRECT_URI + "?" + Constants.NAME_CODE + "=")) {
+        if (url.contains(Constants.REDIRECT_URI + "?" + Constants.KEY_CODE + "=")) {
             String code = MyURLUtils.parseCode(url);
             view.stopLoading();
 

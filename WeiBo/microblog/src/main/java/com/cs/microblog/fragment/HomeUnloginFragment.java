@@ -1,16 +1,12 @@
 package com.cs.microblog.fragment;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebViewClient;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cs.microblog.R;
 import com.cs.microblog.activity.WebViewActivity;
@@ -30,7 +26,7 @@ public class HomeUnloginFragment extends Fragment {
         tv_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = Constants.AUTHORIZE_URL + "?" + Constants.NAME_CLIENT_ID + "=" + Constants.APP_KEY + "&" + Constants.NAME_REDIRECT_URI + "=" + Constants.REDIRECT_URI;
+                String url = Constants.AUTHORIZE_URL + "?" + Constants.KEY_CLIENT_ID + "=" + Constants.APP_KEY + "&" + Constants.KEY_REDIRECT_URI + "=" + Constants.REDIRECT_URI;
                 WebViewActivity.openUrl(getContext(),url);
             }
         });

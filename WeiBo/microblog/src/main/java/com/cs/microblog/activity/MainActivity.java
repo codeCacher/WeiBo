@@ -4,6 +4,8 @@ package com.cs.microblog.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -21,9 +23,11 @@ import com.cs.microblog.custom.AccessTokenService;
 import com.cs.microblog.custom.Constants;
 import com.cs.microblog.custom.GetHomeTimelineService;
 import com.cs.microblog.custom.HomeTimelineList;
+import com.cs.microblog.custom.Statuse;
 import com.cs.microblog.fragment.HomeFragment;
 import com.cs.microblog.fragment.HomeUnloginFragment;
 import com.cs.microblog.utils.SharedPreferencesUtils;
+import com.cs.microblog.utils.WeiBoUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +57,17 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private RelativeLayout rl_me;
     private HomeUnloginFragment mFragmentUnloginHome;
     private FragmentManager mFragmentManager;
+    private ArrayList<Statuse> statuses;
+    private Handler handler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            HomeFragment mHomeFragment = new HomeFragment(statuses);
+            mFragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentHomeTransaction = mFragmentManager.beginTransaction();
+            fragmentHomeTransaction.add(R.id.ll_fragment, mHomeFragment);
+            fragmentHomeTransaction.commit();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,35 +78,22 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         SetItemOnTouchListener();
 
         //get the token from sp
-        String token = SharedPreferencesUtils.getString(this,Constants.KEY_ACCESS_TOKEN, "");
-        if(TextUtils.isEmpty(token)){
+        String token = SharedPreferencesUtils.getString(this, Constants.KEY_ACCESS_TOKEN, "");
+        if (TextUtils.isEmpty(token)) {
             showUnloginHomeFragment();
         } else {
             Log.i(TAG, token);
 
-            //TODO 抽取网络请求方法
-            //POST and get the Access Token
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("https://api.weibo.com/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            GetHomeTimelineService getHomeTimelineService = retrofit.create(GetHomeTimelineService.class);
-            Call<HomeTimelineList> accessToken = getHomeTimelineService.getHomeTimelineList(token);
-            accessToken.enqueue(new Callback<HomeTimelineList>() {
+            WeiBoUtils.getHomeTimelineLists(token, 0,new WeiBoUtils.CallBack() {
                 @Override
-                public void onResponse(Call<HomeTimelineList> call, Response<HomeTimelineList> response) {
-                    Log.i(TAG,response.body().toString());
-                    //TODO 获取到了微博列表
-                    HomeFragment mHomeFragment = new HomeFragment(response.body().getStatuses());
-                    mFragmentManager = getSupportFragmentManager();
-                    FragmentTransaction fragmentHomeTransaction = mFragmentManager.beginTransaction();
-                    fragmentHomeTransaction.add(R.id.ll_fragment, mHomeFragment);
-                    fragmentHomeTransaction.commit();
+                public void onSuccess(Call<HomeTimelineList> call, Response<HomeTimelineList> response) {
+                    statuses = response.body().getStatuses();
+                    handler.sendEmptyMessage(0);
                 }
 
                 @Override
                 public void onFailure(Call<HomeTimelineList> call, Throwable t) {
-                    Log.i(TAG,t.toString());
+                    Log.i(TAG, t.toString());
                 }
             });
         }
