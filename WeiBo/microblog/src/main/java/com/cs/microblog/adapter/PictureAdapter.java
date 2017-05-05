@@ -39,7 +39,18 @@ public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.MyHolder
 
     @Override
     public MyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new MyHolder(View.inflate(context, R.layout.blog_picture, null));
+        MyHolder holder = new MyHolder(View.inflate(context, R.layout.blog_picture, null));
+
+//        //get screen size
+//        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+//        final int screenWidth = windowManager.getDefaultDisplay().getWidth();
+//        //when picNumber > 1,needn't get the picture size
+//        ViewGroup.LayoutParams layoutParams = holder.getAfiv_picture().getLayoutParams();
+//        layoutParams.width = screenWidth/3;//(parent.getWidth() - holder.getLl_picture_root().getPaddingLeft() * 6) / 3;
+//        layoutParams.height = screenWidth/3;//(parent.getWidth() - holder.getLl_picture_root().getPaddingLeft() * 6) / 3;
+//        holder.getAfiv_picture().setLayoutParams(layoutParams);
+
+        return holder;
     }
 
     @Override
@@ -47,50 +58,54 @@ public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.MyHolder
         //get larg picture url
         final String url = picUrls.get(position).getThumbnail_pic();
         final String largeUrl = url.replace("thumbnail", "large");
+        final String bmiddleUrl = url.replace("thumbnail", "bmiddle");
+
+
+        //only when picNumber = 1,need to get the picture's size
+//        if (picNumber == 1) {
+//
+        //when get the pictur size,set the ImageView
+//            final Handler handler = new Handler() {
+//                @Override
+//                public void handleMessage(Message msg) {
+//                    ViewGroup.LayoutParams layoutParams = holder.getAfiv_picture().getLayoutParams();
+//                    if (bitmap.getWidth() >= bitmap.getHeight()) {
+//                        layoutParams.width = screenWidth * 2 / 3;
+//                        layoutParams.height = screenWidth / 2;
+//                    } else {
+//                        layoutParams.width = screenWidth / 2;
+//                        layoutParams.height = screenWidth * 2 / 3;
+//                    }
+//                    holder.getAfiv_picture().setLayoutParams(layoutParams);
+//                    Picasso.with(context).load(largeUrl).into(holder.getAfiv_picture());
+//                }
+//            };
+//
+//            //asynchronous get the picture
+//            new Thread() {
+//                @Override
+//                public void run() {
+//                    try {
+//                        bitmap = Picasso.with(context).load(url).get();
+//                        handler.sendEmptyMessage(0);
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }.start();
+//        } else {
 
         //get screen size
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         final int screenWidth = windowManager.getDefaultDisplay().getWidth();
+        //when picNumber > 1,needn't get the picture size
+        ViewGroup.LayoutParams layoutParams = holder.getAfiv_picture().getLayoutParams();
+        layoutParams.width = (parent.getWidth() - holder.getLl_picture_root().getPaddingLeft() * 6) / 3;
+        layoutParams.height = (parent.getWidth() - holder.getLl_picture_root().getPaddingLeft() * 6) / 3;
+        holder.getAfiv_picture().setLayoutParams(layoutParams);
 
-        //only when picNumber = 1,need to get the picture's size
-        if (picNumber == 1) {
-
-            //when get the pictur size,set the ImageView
-            final Handler handler = new Handler() {
-                @Override
-                public void handleMessage(Message msg) {
-                    ViewGroup.LayoutParams layoutParams = holder.getAfiv_picture().getLayoutParams();
-                    if (bitmap.getWidth() >= bitmap.getHeight()) {
-                        layoutParams.width = screenWidth * 2 / 3;
-                        layoutParams.height = screenWidth / 2;
-                    } else {
-                        layoutParams.width = screenWidth / 2;
-                        layoutParams.height = screenWidth * 2 / 3;
-                    }
-                    holder.getAfiv_picture().setLayoutParams(layoutParams);
-                    Picasso.with(context).load(largeUrl).into(holder.getAfiv_picture());
-                }
-            };
-
-            //asynchronous get the picture
-            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        bitmap = Picasso.with(context).load(url).get();
-                        handler.sendEmptyMessage(0);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }.start();
-        } else {
-            //when picNumber > 1,needn't get the picture size
-            ViewGroup.LayoutParams layoutParams = holder.getAfiv_picture().getLayoutParams();
-            layoutParams.width = (parent.getWidth() - holder.getLl_picture_root().getPaddingLeft() * 6) / 3;
-            layoutParams.height = (parent.getWidth() - holder.getLl_picture_root().getPaddingLeft() * 6) / 3;
-            Picasso.with(context).load(largeUrl).into(holder.getAfiv_picture());
-        }
+        Picasso.with(context).load(bmiddleUrl).into(holder.getAfiv_picture());
+//        }
     }
 
     @Override

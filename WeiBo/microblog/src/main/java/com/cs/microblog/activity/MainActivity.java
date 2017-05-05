@@ -57,17 +57,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private RelativeLayout rl_me;
     private HomeUnloginFragment mFragmentUnloginHome;
     private FragmentManager mFragmentManager;
-    private ArrayList<Statuse> statuses;
-    private Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            HomeFragment mHomeFragment = new HomeFragment(statuses);
-            mFragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentHomeTransaction = mFragmentManager.beginTransaction();
-            fragmentHomeTransaction.add(R.id.ll_fragment, mHomeFragment);
-            fragmentHomeTransaction.commit();
-        }
-    };
+
+    private HomeFragment mHomeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,19 +74,23 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
             showUnloginHomeFragment();
         } else {
             Log.i(TAG, token);
+            showHomeFragment();
+        }
+    }
 
-            WeiBoUtils.getHomeTimelineLists(token, 0,new WeiBoUtils.CallBack() {
-                @Override
-                public void onSuccess(Call<HomeTimelineList> call, Response<HomeTimelineList> response) {
-                    statuses = response.body().getStatuses();
-                    handler.sendEmptyMessage(0);
-                }
-
-                @Override
-                public void onFailure(Call<HomeTimelineList> call, Throwable t) {
-                    Log.i(TAG, t.toString());
-                }
-            });
+    private void showHomeFragment() {
+        CancelSelectAll();
+        iv_home.setSelected(true);
+        if (mHomeFragment == null) {
+            mHomeFragment = new HomeFragment();
+            mFragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentHomeTransaction = mFragmentManager.beginTransaction();
+            fragmentHomeTransaction.replace(R.id.ll_fragment, mHomeFragment);
+            fragmentHomeTransaction.commit();
+        } else {
+            FragmentTransaction fragmentHomeTransaction = mFragmentManager.beginTransaction();
+            fragmentHomeTransaction.add(R.id.ll_fragment, mHomeFragment);
+            fragmentHomeTransaction.commit();
         }
     }
 

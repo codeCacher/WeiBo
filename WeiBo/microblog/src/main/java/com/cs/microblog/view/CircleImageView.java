@@ -75,7 +75,7 @@ public class CircleImageView extends android.support.v7.widget.AppCompatImageVie
      * @return
      */
     private Bitmap getCircleBitmap(Bitmap bitmap, int Radius) {
-        Bitmap outBitmap = Bitmap.createBitmap(getWidth(), getHeight(), bitmap.getConfig());
+        Bitmap outBitmap = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
         mDrawCanvas.setBitmap(outBitmap);
         mDrawCanvas.drawCircle(Radius, Radius, Radius, mPaint);
         mPaint.setXfermode(mPDM_srcIn);
