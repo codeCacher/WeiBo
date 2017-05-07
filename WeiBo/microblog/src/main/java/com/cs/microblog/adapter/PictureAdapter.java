@@ -1,5 +1,6 @@
 package com.cs.microblog.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Handler;
@@ -8,15 +9,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.cs.microblog.R;
+import com.cs.microblog.activity.MainActivity;
 import com.cs.microblog.custom.PicUrl;
+import com.cs.microblog.fragment.HomeFragment;
 import com.cs.microblog.view.AutoFitImageView;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Formatter;
 
 /**
  * Created by Administrator on 2017/5/1.
@@ -27,7 +33,6 @@ public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.MyHolder
     private ArrayList<PicUrl> picUrls;
     private int picNumber;
     private RecyclerView parent;
-    private Bitmap bitmap;
 
     PictureAdapter(Context context, ArrayList<PicUrl> picUrls, RecyclerView parent) {
         this.context = context;
@@ -59,7 +64,13 @@ public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.MyHolder
         final String url = picUrls.get(position).getThumbnail_pic();
         final String largeUrl = url.replace("thumbnail", "large");
         final String bmiddleUrl = url.replace("thumbnail", "bmiddle");
-
+//        final Handler handler = new Handler() {
+//            @Override
+//            public void handleMessage(Message msg) {
+//                Bitmap bitmap = (Bitmap) msg.obj;
+//                holder.getAfiv_picture().setImageBitmap(bitmap);
+//            }
+//        };
 
         //only when picNumber = 1,need to get the picture's size
 //        if (picNumber == 1) {
@@ -95,16 +106,47 @@ public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.MyHolder
 //            }.start();
 //        } else {
 
+//        //get screen size
+//        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+//        final int screenWidth = windowManager.getDefaultDisplay().getWidth();
+//        //when picNumber > 1,needn't get the picture size
+//        ViewGroup.LayoutParams layoutParams = holder.getAfiv_picture().getLayoutParams();
+//        layoutParams.width = (parent.getWidth() - holder.getLl_picture_root().getPaddingLeft() * 6) / 3;
+//        layoutParams.height = (parent.getWidth() - holder.getLl_picture_root().getPaddingLeft() * 6) / 3;
+//        holder.getAfiv_picture().setLayoutParams(layoutParams);
+
         //get screen size
         WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         final int screenWidth = windowManager.getDefaultDisplay().getWidth();
         //when picNumber > 1,needn't get the picture size
         ViewGroup.LayoutParams layoutParams = holder.getAfiv_picture().getLayoutParams();
-        layoutParams.width = (parent.getWidth() - holder.getLl_picture_root().getPaddingLeft() * 6) / 3;
-        layoutParams.height = (parent.getWidth() - holder.getLl_picture_root().getPaddingLeft() * 6) / 3;
+        layoutParams.width = screenWidth/3;//(parent.getWidth() - holder.getLl_picture_root().getPaddingLeft() * 6) / 3;
+        layoutParams.height = screenWidth/3;//(parent.getWidth() - holder.getLl_picture_root().getPaddingLeft() * 6) / 3;
         holder.getAfiv_picture().setLayoutParams(layoutParams);
-
+//       new Handler().postDelayed(new Runnable() {
+//           @Override
+//           public void run() {
+//        holder.getAfiv_picture().setImageResource(R.drawable.splash_weibo_logo);
         Picasso.with(context).load(bmiddleUrl).into(holder.getAfiv_picture());
+//
+//        new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                try {
+//                    Bitmap bitmap;
+//                    bitmap = Picasso.with(context).load(bmiddleUrl).get();
+//                    Message msg = Message.obtain();
+//                    msg.obj = bitmap;
+//                    handler.sendMessage(msg);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }).start();
+
+
+//           }
+//       },5000);
 //        }
     }
 
@@ -127,6 +169,15 @@ public class PictureAdapter extends RecyclerView.Adapter<PictureAdapter.MyHolder
             super(itemView);
             afiv_picture = (AutoFitImageView) itemView.findViewById(R.id.afiv_picture);
             ll_picture_root = (LinearLayout) itemView.findViewById(R.id.ll_picture_root);
+
+//            //get screen size
+//            WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+//            final int screenWidth = windowManager.getDefaultDisplay().getWidth();
+//            //when picNumber > 1,needn't get the picture size
+//            ViewGroup.LayoutParams layoutParams = afiv_picture.getLayoutParams();
+//            layoutParams.width = (parent.getWidth() - ll_picture_root.getPaddingLeft() * 6) / 3;
+//            layoutParams.height = (parent.getWidth() - ll_picture_root.getPaddingLeft() * 6) / 3;
+//            afiv_picture.setLayoutParams(layoutParams);
         }
 
         public AutoFitImageView getAfiv_picture() {

@@ -40,11 +40,21 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
     private Context context;
     private ArrayList<Statuse> statuses;
     private LayoutInflater mInflater;
+    private boolean mHasFootItem;
 
     public BlogItemAdapter(Context context, @Nullable ArrayList<Statuse> statuses) {
         this.context = context;
         this.statuses = statuses;
         this.mInflater = LayoutInflater.from(context);
+        mHasFootItem = true;
+    }
+
+    public void removeFootItem(){
+        mHasFootItem = false;
+    }
+
+    public void addFootItem(){
+        mHasFootItem = true;
     }
 
     @Override
@@ -59,7 +69,6 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
     @Override
     public BlogItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == NORMAL_ITEM) {
-
             return new BlogItemViewHolder(mInflater.inflate(R.layout.blog_item,null,false), NORMAL_ITEM);
         } else {
             return new BlogItemViewHolder(mInflater.inflate(R.layout.blog_foot_item,parent,false), FOOT_ITEM);
@@ -170,7 +179,11 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
 
     @Override
     public int getItemCount() {
-        return statuses.size() + 1;
+        if(mHasFootItem){
+            return statuses.size() + 1;
+        } else {
+            return statuses.size();
+        }
     }
 
     class BlogItemViewHolder extends RecyclerView.ViewHolder {
