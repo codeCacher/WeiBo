@@ -1,33 +1,33 @@
 package com.cs.microblog.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import android.widget.LinearLayout;
 import com.cs.microblog.R;
+import com.cs.microblog.activity.PictureViewerActivity;
 import com.cs.microblog.custom.Statuse;
 import com.cs.microblog.utils.TimeUtils;
 import com.cs.microblog.view.BlogItemBottomButtonView;
 import com.cs.microblog.view.CircleImageView;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.core.ImagePipeline;
 import com.squareup.picasso.Picasso;
-
+import com.cs.microblog.custom.PicUrl;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.zip.Inflater;
-
+import com.cs.microblog.view.SudokuImage;
 /**
  * Created by Administrator on 2017/4/28.
  * Blog item adapter
@@ -41,19 +41,27 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
     private ArrayList<Statuse> statuses;
     private LayoutInflater mInflater;
     private boolean mHasFootItem;
+    private RecyclerView recyclerViewParent;
 
-    public BlogItemAdapter(Context context, @Nullable ArrayList<Statuse> statuses) {
+    public BlogItemAdapter(Context context, RecyclerView parent, @Nullable ArrayList<Statuse> statuses) {
         this.context = context;
         this.statuses = statuses;
         this.mInflater = LayoutInflater.from(context);
+        this.recyclerViewParent = parent;
         mHasFootItem = true;
     }
 
-    public void removeFootItem(){
+    /**
+     * remove the foot item
+     */
+    public void removeFootItem() {
         mHasFootItem = false;
     }
 
-    public void addFootItem(){
+    /**
+     * enable the foot item
+     */
+    public void addFootItem() {
         mHasFootItem = true;
     }
 
@@ -69,9 +77,9 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
     @Override
     public BlogItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == NORMAL_ITEM) {
-            return new BlogItemViewHolder(mInflater.inflate(R.layout.blog_item,null,false), NORMAL_ITEM);
+            return new BlogItemViewHolder(mInflater.inflate(R.layout.blog_item, null, false), NORMAL_ITEM);
         } else {
-            return new BlogItemViewHolder(mInflater.inflate(R.layout.blog_foot_item,parent,false), FOOT_ITEM);
+            return new BlogItemViewHolder(mInflater.inflate(R.layout.blog_foot_item, parent, false), FOOT_ITEM);
         }
     }
 
@@ -79,46 +87,97 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
     public void onBindViewHolder(BlogItemViewHolder holder, int position) {
 
         if (position == statuses.size()) {
-            AnimationDrawable background = (AnimationDrawable)holder.getIv_loading().getDrawable();
+            AnimationDrawable background = (AnimationDrawable) holder.getIv_loading().getDrawable();
             background.start();
 
         } else {
+            final Statuse statuse = statuses.get(position);
             String blogInfo = parseBlogInfo(position);
 
-            Picasso.with(context).load(statuses.get(position).getUser().getProfile_image_url()).into(holder.iv_blogTitle);
+            Picasso.with(context).load(statuse.getUser().getProfile_image_url()).into(holder.iv_blogTitle);
 
-            holder.getTv_userName().setText(statuses.get(position).getUser().getName());
-            holder.getTv_blogText().setText(statuses.get(position).getText());
+            holder.getTv_userName().setText(statuse.getUser().getName());
+            holder.getTv_blogText().setText(statuse.getText());
             holder.getTv_blogInfo().setText(blogInfo);
-            holder.getBibbv_repost().setText(getCountText(statuses.get(position).getReposts_count(), "转发"));
-            holder.getBibbv_comment().setText(getCountText(statuses.get(position).getComments_count(), "评论"));
-            holder.getBibbv_like().setText(getCountText(statuses.get(position).getAttitudes_count(), "赞"));
+            holder.getBibbv_repost().setText(getCountText(statuse.getReposts_count(), "转发"));
+            holder.getBibbv_comment().setText(getCountText(statuse.getComments_count(), "评论"));
+            holder.getBibbv_like().setText(getCountText(statuse.getAttitudes_count(), "赞"));
 
-            setPictures(holder, position);
+            setPicture(holder.getSi_picture(),position,statuse.getBmiddlePicUrlList());
+
+            if (statuse.getRetweeted_status() != null) {
+                setRetweetLayout(holder);
+                setRetweetText(holder, position);
+
+                setPicture(holder.getSi_retweet_picture(), position,statuse.getRetweeted_status().getBmiddlePicUrlList());
+            } else {
+                removeRetweetLayout(holder);
+            }
+            if(statuse.getPic_urls() != null) {
+                holder.getSi_picture().setOnItemClickListener(new SudokuImage.OnItemClickListener() {
+                    @Override
+                    public void OnItemClicked(int index, ArrayList<String> imageUrlList) {
+                        //TODO 传过去的url不对
+                        Log.i(TAG,"image " + index + " clicked");
+                        Fresco.getImagePipeline().pause();
+                        Intent intent = new Intent(context, PictureViewerActivity.class);
+                        intent.putExtra("image_urls",imageUrlList);
+                        intent.putExtra("clickIndex",index);
+                        context.startActivity(intent);
+                    }
+                });
+            }
         }
 
     }
-
-    private void setPictures(BlogItemViewHolder holder, int position) {
-        //set picture recycler view
-        PictureAdapter pGAdapter = new PictureAdapter(context, statuses.get(position).getPic_urls(), holder.getRv_picture());
-        holder.getRv_picture().setAdapter(pGAdapter);
-
-        //different picture number,different style
-        int columNumber;
-        switch (statuses.get(position).getPic_urls().size()) {
-            case 1:
-                columNumber = 1;
-                break;
-            case 4:
-                columNumber = 2;
-                break;
-            default:
-                columNumber = 3;
-                break;
+    private void setPicture(SudokuImage sudokuImage, int position,ArrayList<String> bmiddleUrls) {
+        sudokuImage.setImageUrls(bmiddleUrls);
+        if(recyclerViewParent.getScrollState()==RecyclerView.SCROLL_STATE_IDLE) {
+            sudokuImage.showImageUrls();
+        } else {
+            sudokuImage.setImageVisible();
+            sudokuImage.setImageDimension();
+            MyOnScrollListener onScrollListener = new MyOnScrollListener(position,sudokuImage);
+            recyclerViewParent.addOnScrollListener(onScrollListener);
         }
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, columNumber, LinearLayoutManager.VERTICAL, false);
-        holder.getRv_picture().setLayoutManager(gridLayoutManager);
+    }
+
+    private class MyOnScrollListener extends RecyclerView.OnScrollListener {
+        SudokuImage sudokuImage;
+        int postion;
+        public MyOnScrollListener(int position, SudokuImage sudokuImage) {
+            this.postion = position;
+            this.sudokuImage = sudokuImage;
+        }
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+            if (newState == RecyclerView.SCROLL_STATE_IDLE ) {
+                LinearLayoutManager layoutManager = (LinearLayoutManager)recyclerViewParent.getLayoutManager();
+                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+                int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
+                if(postion>=firstVisibleItemPosition && postion<=lastVisibleItemPosition) {
+                    sudokuImage.loadImage();
+                    recyclerViewParent.removeOnScrollListener(this);
+                }
+
+            }
+        }
+    }
+
+    private void removeRetweetLayout(BlogItemViewHolder holder) {
+        holder.getLl_retweet().setVisibility(View.GONE);
+    }
+
+    private void setRetweetLayout(BlogItemViewHolder holder) {
+        holder.getLl_retweet().setVisibility(View.VISIBLE);
+    }
+
+    private void setRetweetText(BlogItemViewHolder holder, int position) {
+        holder.getTv_retweet_text().setText("@" +
+                statuses.get(position).getRetweeted_status().getUser().getName() +
+                ":" +
+                statuses.get(position).getRetweeted_status().getText());
     }
 
     private String getCountText(int count, String defaultText) {
@@ -128,7 +187,12 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
             return Integer.toString(count);
         }
     }
-
+    /**
+     * get blog information
+     *
+     * @param position item position
+     * @return the information string
+     */
     private String parseBlogInfo(int position) {
 
         //parse the create time
@@ -179,7 +243,7 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
 
     @Override
     public int getItemCount() {
-        if(mHasFootItem){
+        if (mHasFootItem) {
             return statuses.size() + 1;
         } else {
             return statuses.size();
@@ -195,9 +259,14 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
         private BlogItemBottomButtonView bibbv_repost = null;
         private BlogItemBottomButtonView bibbv_comment = null;
         private BlogItemBottomButtonView bibbv_like = null;
-        private RecyclerView rv_picture = null;
+//        private RecyclerView rv_picture = null;
         private TextView tv_foot_text = null;
         private ImageView iv_loading = null;
+        private TextView tv_retweet_text = null;
+        //        private RecyclerView rv_retweet_picture = null;
+        private LinearLayout ll_retweet = null;
+        private SudokuImage si_picture = null;
+        private SudokuImage si_retweet_picture = null;
 
         BlogItemViewHolder(View itemView, int viewType) {
             super(itemView);
@@ -209,7 +278,11 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
                 bibbv_repost = (BlogItemBottomButtonView) itemView.findViewById(R.id.bibbv_repost);
                 bibbv_comment = (BlogItemBottomButtonView) itemView.findViewById(R.id.bibbv_comment);
                 bibbv_like = (BlogItemBottomButtonView) itemView.findViewById(R.id.bibbv_like);
-                rv_picture = (RecyclerView) itemView.findViewById(R.id.rv_picture);
+                si_picture = (SudokuImage) itemView.findViewById(R.id.si_picture);
+
+                tv_retweet_text = (TextView) itemView.findViewById(R.id.tv_retweet_text);
+                si_retweet_picture = (SudokuImage) itemView.findViewById(R.id.si_retweet_picture);
+                ll_retweet = (LinearLayout) itemView.findViewById(R.id.ll_retweet);
             } else {
                 tv_foot_text = (TextView) itemView.findViewById(R.id.tv_foot_text);
                 iv_loading = (ImageView) itemView.findViewById(R.id.iv_loading);
@@ -246,16 +319,28 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
             return bibbv_like;
         }
 
-        public RecyclerView getRv_picture() {
-            return rv_picture;
-        }
-
         public TextView getTv_foot_text() {
             return tv_foot_text;
         }
 
         public ImageView getIv_loading() {
             return iv_loading;
+        }
+
+        public TextView getTv_retweet_text() {
+            return tv_retweet_text;
+        }
+
+        public LinearLayout getLl_retweet() {
+            return ll_retweet;
+        }
+
+        public SudokuImage getSi_picture() {
+            return si_picture;
+        }
+
+        public SudokuImage getSi_retweet_picture() {
+            return si_retweet_picture;
         }
     }
 }

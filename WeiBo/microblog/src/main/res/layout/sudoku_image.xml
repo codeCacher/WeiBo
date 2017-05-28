@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/tl_root"
+    android:padding="10dp">
+
+    <TableRow android:id="@+id/tr_0" android:visibility="gone">
+
+        <com.cs.microblog.view.ImageWithType
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:id="@+id/iv_0"
+            android:visibility="gone"
+            android:layout_margin="2dp"
+            android:background="@color/colorGrayBlack"
+            android:scaleType="centerCrop" />
+
+        <com.cs.microblog.view.ImageWithType
+            android:layout_width="0dp"
+            android:visibility="gone"
+            android:layout_height="0dp"
+            android:id="@+id/iv_1"
+            android:background="@color/colorGrayBlack"
+            android:layout_margin="2dp"
+            android:scaleType="centerCrop" />
+
+        <com.cs.microblog.view.ImageWithType
+            android:layout_width="0dp"
+            android:visibility="gone"
+            android:layout_height="0dp"
+            android:id="@+id/iv_2"
+            android:background="@color/colorGrayBlack"
+            android:layout_margin="2dp"
+            android:scaleType="centerCrop" />
+    </TableRow>
+
+    <TableRow android:id="@+id/tr_1" android:visibility="gone">
+
+        <com.cs.microblog.view.ImageWithType
+            android:layout_width="0dp"
+            android:visibility="gone"
+            android:layout_height="0dp"
+            android:id="@+id/iv_3"
+            android:background="@color/colorGrayBlack"
+            android:layout_margin="2dp"
+            android:scaleType="centerCrop" />
+
+        <com.cs.microblog.view.ImageWithType
+            android:layout_width="0dp"
+            android:visibility="gone"
+            android:layout_height="0dp"
+            android:id="@+id/iv_4"
+            android:background="@color/colorGrayBlack"
+            android:layout_margin="2dp"
+            android:scaleType="centerCrop" />
+
+        <com.cs.microblog.view.ImageWithType
+            android:layout_width="0dp"
+            android:visibility="gone"
+            android:layout_height="0dp"
+            android:id="@+id/iv_5"
+            android:background="@color/colorGrayBlack"
+            android:layout_margin="2dp"
+            android:scaleType="centerCrop" />
+    </TableRow>
+
+    <TableRow android:id="@+id/tr_2" android:visibility="gone">
+
+        <com.cs.microblog.view.ImageWithType
+            android:layout_width="0dp"
+            android:visibility="gone"
+            android:layout_height="0dp"
+            android:id="@+id/iv_6"
+            android:background="@color/colorGrayBlack"
+            android:layout_margin="2dp"
+            android:scaleType="centerCrop" />
+
+        <com.cs.microblog.view.ImageWithType
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            android:id="@+id/iv_7"
+            android:background="@color/colorGrayBlack"
+            android:layout_margin="2dp"
+            android:scaleType="centerCrop" />
+
+        <com.cs.microblog.view.ImageWithType
+            android:layout_width="0dp"
+            android:visibility="gone"
+            android:layout_height="0dp"
+            android:id="@+id/iv_8"
+            android:background="@color/colorGrayBlack"
+            android:layout_margin="2dp"
+            android:scaleType="centerCrop" />
+
+    </TableRow>
+
+</TableLayout>

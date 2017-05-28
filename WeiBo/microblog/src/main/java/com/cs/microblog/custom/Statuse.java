@@ -287,4 +287,26 @@ public class Statuse {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public ArrayList<String> getThumbmailPicUrlList() {
+        ArrayList<String> thumbnailUrls = new ArrayList<>();
+        for (PicUrl url : pic_urls) {
+            thumbnailUrls.add(url.getThumbnail_pic());
+        }
+        return thumbnailUrls;
+    }
+    public ArrayList<String> getBmiddlePicUrlList() {
+        ArrayList<String> bmiddleUrls = new ArrayList<>();
+        for (PicUrl url : pic_urls) {
+            bmiddleUrls.add(url.getThumbnail_pic().replace("thumbnail", "bmiddle"));
+        }
+        return bmiddleUrls;
+    }
+    public ArrayList<String> getLargePicUrlList() {
+        ArrayList<String> largeUrls = new ArrayList<>();
+        for (PicUrl url : pic_urls) {
+            largeUrls.add(url.getThumbnail_pic().replace("thumbnail", "large"));
+        }
+        return largeUrls;
+    }
 }

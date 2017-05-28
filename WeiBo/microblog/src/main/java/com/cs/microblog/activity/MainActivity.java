@@ -82,8 +82,8 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         CancelSelectAll();
         iv_home.setSelected(true);
         if (mHomeFragment == null) {
-            mHomeFragment = new HomeFragment();
             mFragmentManager = getSupportFragmentManager();
+            mHomeFragment = new HomeFragment();
             FragmentTransaction fragmentHomeTransaction = mFragmentManager.beginTransaction();
             fragmentHomeTransaction.replace(R.id.ll_fragment, mHomeFragment);
             fragmentHomeTransaction.commit();

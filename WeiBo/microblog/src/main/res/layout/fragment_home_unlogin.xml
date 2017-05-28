@@ -50,15 +50,47 @@
     </RelativeLayout>
 
     <RelativeLayout
+        android:background="@color/colorGrayWhite"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/iv_span"
+            android:layout_alignBottom="@+id/iv_alpha"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/visitordiscover_feed_image_smallicon"
+            android:layout_width="200dp"
+            android:layout_height="200dp" />
+        <ImageView
+            android:background="@drawable/alpha_rectagle_shape"
+            android:id="@+id/iv_alpha"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="100dp" />
+        <ImageView
+            android:layout_above="@+id/tv_attach"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="40dp"
+            android:src="@drawable/visitordiscover_feed_image_house"
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
+        <TextView
+            android:id="@+id/tv_attach"
+            android:layout_below="@id/iv_alpha"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/colorGrayBlack"
+            android:text="关注一些人，看看有什么惊喜"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
         <Button
             android:id="@+id/bt_tofollow"
-            android:layout_centerInParent="true"
-            android:layout_width="wrap_content"
+            android:layout_below="@+id/tv_attach"
+            android:layout_marginTop="10dp"
+            android:layout_centerHorizontal="true"
+            android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:background="@color/colorWhite"
+            android:background="@color/colorGrayWhite"
             android:text="去关注"
             android:textColor="@color/colorOrange" />
 

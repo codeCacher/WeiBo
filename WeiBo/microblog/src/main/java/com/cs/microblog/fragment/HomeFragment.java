@@ -1,35 +1,23 @@
 package com.cs.microblog.fragment;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
+
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cs.microblog.R;
-import com.cs.microblog.adapter.BlogItemAdapter;
-import com.cs.microblog.custom.Constants;
-import com.cs.microblog.custom.HomeTimelineList;
-import com.cs.microblog.custom.Statuse;
-import com.cs.microblog.utils.SharedPreferencesUtils;
-import com.cs.microblog.utils.WeiBoUtils;
 
 import java.util.ArrayList;
 
-import retrofit2.Call;
-import retrofit2.Response;
-
-import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
 
 /**
  * Created by Administrator on 2017/4/27.
@@ -40,198 +28,119 @@ public class HomeFragment extends Fragment {
 
     private String TAG = "HomeFragment";
 
-    private ArrayList<Statuse> statuse = new ArrayList<>();
-    private int itemCount;
     private View view;
-    private RecyclerView rv_homeblog;
-    private SwipeRefreshLayout srl;
-    private LinearLayoutManager mLinearLayoutManager;
-    /**
-     * add more refresh state
-     */
-    private boolean mIsRefreshing;
-    private BlogItemAdapter mBlogItemAdapter;
-    private ImageView iv_loading;
-    private TextView tv_foot_text;
-    private View mFootView;
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            initRecyclerView();
-            srl.setRefreshing(false);
-        }
-    };
-
-
-    private void initRecyclerView() {
-        mBlogItemAdapter = new BlogItemAdapter(getContext(), statuse);
-        rv_homeblog.setAdapter(mBlogItemAdapter);
-        mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-        rv_homeblog.setLayoutManager(mLinearLayoutManager);
-    }
-
+    private HomeLikeFragment mHomeLikeFragment;
+    private FragmentManager mFragmentManager;
+    private HomeHotFragment mHomeHotFragment;
+    private ViewPager vp_blog;
+    private ArrayList<Fragment> mFragmentList;
+    private MyFragmentAdapter mMyFragmentAdapter;
+    private TextView tv_home_like;
+    private TextView tv_home_hot;
+    private Typeface typeface;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_home, container, false);
-
-        boundView();
-
-        srl.setRefreshing(true);
-        mIsRefreshing = false;
-
-        WeiBoUtils.getHomeTimelineLists(SharedPreferencesUtils.getString(getContext(),
-                Constants.KEY_ACCESS_TOKEN, ""), 0, new WeiBoUtils.CallBack() {
+        bindView();
+        initData();
+        initFragment();
+        tv_home_like.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSuccess(Call<HomeTimelineList> call, Response<HomeTimelineList> response) {
-                statuse.clear();
-                if (response.body() == null) {
-                    srl.setRefreshing(false);
-                    return;
-                }
-                statuse.addAll(response.body().getStatuses());
-                handler.sendEmptyMessage(0);
-            }
-
-            @Override
-            public void onFailure(Call<HomeTimelineList> call, Throwable t) {
-                Toast.makeText(getContext(), "没有网络了", Toast.LENGTH_SHORT).show();
-                srl.setRefreshing(false);
+            public void onClick(View v) {
+                showPage(0);
             }
         });
-        setRefreshListener();
+
+        tv_home_hot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPage(1);
+            }
+        });
+        vp_blog.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 0) {
+                    showPage(0);
+                } else if (position == 1) {
+                    showPage(1);
+                }
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
         return view;
     }
 
-    /**
-     * set refresh listener
-     */
-    private void setRefreshListener() {
-        setAddMoreRefresh();
-        setDropDownRefesh();
+    private void showPage(int pageIndex) {
+        switch (pageIndex) {
+            case 0:
+                vp_blog.setCurrentItem(0);
+                tv_home_like.setTypeface(typeface, Typeface.BOLD);
+                tv_home_like.setTextColor(Color.BLACK);
+                tv_home_hot.setTypeface(typeface, Typeface.NORMAL);
+                tv_home_hot.setTextColor(Color.GRAY);
+                break;
+            case 1:
+                vp_blog.setCurrentItem(1);
+                tv_home_like.setTypeface(typeface, Typeface.NORMAL);
+                tv_home_like.setTextColor(Color.GRAY);
+                tv_home_hot.setTypeface(typeface, Typeface.BOLD);
+                tv_home_hot.setTextColor(Color.BLACK);
+                break;
+        }
     }
 
-    /**
-     * set drop-down refresh listener
-     */
-    private void setDropDownRefesh() {
-
-        srl.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                WeiBoUtils.getHomeTimelineLists(SharedPreferencesUtils.getString(getContext(),
-                        Constants.KEY_ACCESS_TOKEN, ""), 0, new WeiBoUtils.CallBack() {
-                    @Override
-                    public void onSuccess(Call<HomeTimelineList> call, Response<HomeTimelineList> response) {
-                        statuse.clear();
-                        if (response.body() == null) {
-                            srl.setRefreshing(false);
-                            return;
-                        }
-                        statuse.addAll(response.body().getStatuses());
-                        if (rv_homeblog.getAdapter() == null) {
-                            initRecyclerView();
-                        } else {
-                            rv_homeblog.getAdapter().notifyDataSetChanged();
-                            rv_homeblog.refreshDrawableState();
-                        }
-                        mBlogItemAdapter.addFootItem();
-                        srl.setRefreshing(false);
-                    }
-
-                    @Override
-                    public void onFailure(Call<HomeTimelineList> call, Throwable t) {
-                        Toast.makeText(getContext(), "没有网络了", Toast.LENGTH_SHORT).show();
-                        srl.setRefreshing(false);
-                    }
-                });
-            }
-        });
+    private void initData() {
+        typeface = Typeface.create("homeTextType", Typeface.NORMAL);
     }
 
-    /**
-     * set add more refresh listener
-     */
-    private void setAddMoreRefresh() {
-        rv_homeblog.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                itemCount = recyclerView.getAdapter().getItemCount();
-                int lastVisibleItemPosition = mLinearLayoutManager.findLastVisibleItemPosition();
-                if (lastVisibleItemPosition + 1 == itemCount && dy > 0 && !mIsRefreshing) {
-                    mIsRefreshing = true;
-                    if(mFootView==null){
-                        BoundFootView();
-                    }
-                    setFootViewLoading();
+    private void initFragment() {
+        mFragmentManager = getChildFragmentManager();
+        mHomeLikeFragment = new HomeLikeFragment();
+        mHomeHotFragment = new HomeHotFragment();
 
-                    WeiBoUtils.getHomeTimelineLists(SharedPreferencesUtils.getString(getContext(),
-                            Constants.KEY_ACCESS_TOKEN, ""), statuse.get(statuse.size() - 1).getId() - 1, new WeiBoUtils.CallBack() {
-                        @Override
-                        public void onSuccess(Call<HomeTimelineList> call, Response<HomeTimelineList> response) {
-                            if (response.body() == null || response.body().getStatuses().size() == 0) {
-                                mBlogItemAdapter.removeFootItem();
-                                rv_homeblog.getAdapter().notifyDataSetChanged();
-                                rv_homeblog.refreshDrawableState();
-                            } else {
-                                statuse.addAll(response.body().getStatuses());
-                                rv_homeblog.getAdapter().notifyDataSetChanged();
-                                rv_homeblog.refreshDrawableState();
-
-                                mBlogItemAdapter.addFootItem();
-                                setFootViewSuccess();
-                            }
-                            mIsRefreshing = false;
-                        }
-
-                        @Override
-                        public void onFailure(Call<HomeTimelineList> call, Throwable t) {
-                            mIsRefreshing = false;
-
-                            setFootViewFail();
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    private void setFootViewSuccess() {
-        iv_loading.setVisibility(View.GONE);
-        tv_foot_text.setText("更多...");
-    }
-
-    /**
-     * set foot item to fail state
-     */
-    private void setFootViewFail() {
-        iv_loading.setVisibility(View.GONE);
-        tv_foot_text.setText("还没有联网哦，去设置网络吧");
-    }
-
-    /**
-     * set foot item to loading state
-     */
-    private void setFootViewLoading() {
-        iv_loading.setVisibility(View.VISIBLE);
-        tv_foot_text.setText("加载中....");
-    }
-
-    /**
-     * find the foot item view and bound the view
-     */
-    private void BoundFootView() {
-        mFootView = mLinearLayoutManager.findViewByPosition(statuse.size());
-        iv_loading = (ImageView) mFootView.findViewById(R.id.iv_loading);
-        tv_foot_text = (TextView) mFootView.findViewById(R.id.tv_foot_text);
+        mFragmentList = new ArrayList<>();
+        mFragmentList.add(mHomeLikeFragment);
+        mFragmentList.add(mHomeHotFragment);
+        mMyFragmentAdapter = new MyFragmentAdapter(mFragmentManager, mFragmentList);
+        vp_blog.setAdapter(mMyFragmentAdapter);
     }
 
     /**
      * bound view in home fragment
      */
-    private void boundView() {
-        rv_homeblog = (RecyclerView) view.findViewById(R.id.rv_homeblog);
-        srl = (SwipeRefreshLayout) view.findViewById(R.id.srl);
+    private void bindView() {
+        vp_blog = (ViewPager) view.findViewById(R.id.vp_blog);
+        tv_home_like = (TextView) view.findViewById(R.id.tv_home_like);
+        tv_home_hot = (TextView) view.findViewById(R.id.tv_home_hot);
+
+        showPage(0);
+    }
+
+    private class MyFragmentAdapter extends FragmentPagerAdapter {
+        ArrayList<Fragment> fragmentList;
+
+        MyFragmentAdapter(FragmentManager fm, ArrayList<Fragment> fragmentList) {
+            super(fm);
+            this.fragmentList = fragmentList;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return fragmentList.size();
+        }
     }
 }
