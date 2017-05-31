@@ -22,6 +22,7 @@ import com.cs.microblog.custom.HomeTimelineList;
 import com.cs.microblog.custom.Statuse;
 import com.cs.microblog.utils.SharedPreferencesUtils;
 import com.cs.microblog.utils.WeiBoUtils;
+import com.facebook.drawee.backends.pipeline.Fresco;
 
 import java.util.ArrayList;
 
@@ -68,6 +69,20 @@ public class HomeHotFragment extends Fragment {
         rv_homeblog.setAdapter(mBlogItemAdapter);
         mLinearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
         rv_homeblog.setLayoutManager(mLinearLayoutManager);
+        rv_homeblog.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                switch (newState) {
+                    case RecyclerView.SCROLL_STATE_DRAGGING:
+                    case RecyclerView.SCROLL_STATE_SETTLING:
+                        Fresco.getImagePipeline().pause();
+                        break;
+                    case RecyclerView.SCROLL_STATE_IDLE:
+                        Fresco.getImagePipeline().resume();
+                        break;
+                }
+            }
+        });
     }
 
     @Nullable
@@ -136,7 +151,6 @@ public class HomeHotFragment extends Fragment {
                             initRecyclerView();
                         } else {
                             rv_homeblog.getAdapter().notifyDataSetChanged();
-                            rv_homeblog.refreshDrawableState();
                         }
                         mBlogItemAdapter.addFootItem();
                         srl.setRefreshing(false);
@@ -182,7 +196,6 @@ public class HomeHotFragment extends Fragment {
                                 statuse.addAll(response.body().getStatuses().subList(publicBlogCount-1,response.body().getStatuses().size()-1));
                                 publicBlogCount = response.body().getStatuses().size();
                                 rv_homeblog.getAdapter().notifyDataSetChanged();
-                                rv_homeblog.refreshDrawableState();
 
                                 mBlogItemAdapter.addFootItem();
                                 setFootViewSuccess();

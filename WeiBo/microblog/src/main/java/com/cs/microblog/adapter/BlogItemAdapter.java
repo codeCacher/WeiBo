@@ -84,7 +84,7 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
     }
 
     @Override
-    public void onBindViewHolder(BlogItemViewHolder holder, int position) {
+    public void onBindViewHolder(final BlogItemViewHolder holder, int position) {
 
         if (position == statuses.size()) {
             AnimationDrawable background = (AnimationDrawable) holder.getIv_loading().getDrawable();
@@ -103,23 +103,68 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
             holder.getBibbv_comment().setText(getCountText(statuse.getComments_count(), "评论"));
             holder.getBibbv_like().setText(getCountText(statuse.getAttitudes_count(), "赞"));
 
-            setPicture(holder.getSi_picture(),position,statuse.getBmiddlePicUrlList());
+            if(statuse.getBmiddlePicUrlList()!=null){
+                holder.getSi_picture().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View v) {
+                        if(holder.getSi_picture().isPaused()){
+                            holder.getSi_picture().resume();
+                        }
+                    }
+
+                    @Override
+                    public void onViewDetachedFromWindow(View v) {
+                        if(!holder.getSi_picture().isPaused()){
+                            holder.getSi_picture().pause();
+                        }
+                    }
+                });
+                setPicture(holder.getSi_picture(),position,statuse.getBmiddlePicUrlList());
+            }
 
             if (statuse.getRetweeted_status() != null) {
                 setRetweetLayout(holder);
                 setRetweetText(holder, position);
 
-                setPicture(holder.getSi_retweet_picture(), position,statuse.getRetweeted_status().getBmiddlePicUrlList());
+                if(statuse.getRetweeted_status().getBmiddlePicUrlList()!=null){
+                    holder.getSi_retweet_picture().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
+                        @Override
+                        public void onViewAttachedToWindow(View v) {
+                            if(holder.getSi_retweet_picture().isPaused()){
+                                holder.getSi_retweet_picture().resume();
+                            }
+                        }
+
+                        @Override
+                        public void onViewDetachedFromWindow(View v) {
+                            if(!holder.getSi_retweet_picture().isPaused()){
+                                holder.getSi_retweet_picture().pause();
+                            }
+                        }
+                    });
+                    setPicture(holder.getSi_retweet_picture(), position,statuse.getRetweeted_status().getBmiddlePicUrlList());
+                }
             } else {
                 removeRetweetLayout(holder);
             }
             if(statuse.getPic_urls() != null) {
-                holder.getSi_picture().setOnItemClickListener(new SudokuImage.OnItemClickListener() {
+                holder.getSi_picture().setOnItemClickListener(statuse.getBmiddlePicUrlList(),new SudokuImage.OnItemClickListener() {
                     @Override
                     public void OnItemClicked(int index, ArrayList<String> imageUrlList) {
-                        //TODO 传过去的url不对
                         Log.i(TAG,"image " + index + " clicked");
-                        Fresco.getImagePipeline().pause();
+                        Intent intent = new Intent(context, PictureViewerActivity.class);
+                        intent.putExtra("image_urls",imageUrlList);
+                        intent.putExtra("clickIndex",index);
+                        context.startActivity(intent);
+                    }
+                });
+            }
+
+            if(statuse.getRetweeted_status()!=null && statuse.getRetweeted_status().getPic_urls() != null) {
+                holder.getSi_retweet_picture().setOnItemClickListener(statuse.getRetweeted_status().getBmiddlePicUrlList(),new SudokuImage.OnItemClickListener() {
+                    @Override
+                    public void OnItemClicked(int index, ArrayList<String> imageUrlList) {
+                        Log.i(TAG,"image " + index + " clicked");
                         Intent intent = new Intent(context, PictureViewerActivity.class);
                         intent.putExtra("image_urls",imageUrlList);
                         intent.putExtra("clickIndex",index);
@@ -131,13 +176,12 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
 
     }
     private void setPicture(SudokuImage sudokuImage, int position,ArrayList<String> bmiddleUrls) {
-        sudokuImage.setImageUrls(bmiddleUrls);
         if(recyclerViewParent.getScrollState()==RecyclerView.SCROLL_STATE_IDLE) {
-            sudokuImage.showImageUrls();
+            sudokuImage.setImageUrls(bmiddleUrls);
         } else {
-            sudokuImage.setImageVisible();
-            sudokuImage.setImageDimension();
-            MyOnScrollListener onScrollListener = new MyOnScrollListener(position,sudokuImage);
+            sudokuImage.setImageVisible(bmiddleUrls.size());
+            sudokuImage.setImageDimension(bmiddleUrls.size());
+            MyOnScrollListener onScrollListener = new MyOnScrollListener(position,sudokuImage,bmiddleUrls);
             recyclerViewParent.addOnScrollListener(onScrollListener);
         }
     }
@@ -145,22 +189,24 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
     private class MyOnScrollListener extends RecyclerView.OnScrollListener {
         SudokuImage sudokuImage;
         int postion;
-        public MyOnScrollListener(int position, SudokuImage sudokuImage) {
+        ArrayList<String> bmiddleUrls;
+        MyOnScrollListener(int position, SudokuImage sudokuImage, ArrayList<String> bmiddleUrls) {
             this.postion = position;
             this.sudokuImage = sudokuImage;
+            this.bmiddleUrls = bmiddleUrls;
         }
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE ) {
+
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                 LinearLayoutManager layoutManager = (LinearLayoutManager)recyclerViewParent.getLayoutManager();
                 int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
                 int lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition();
                 if(postion>=firstVisibleItemPosition && postion<=lastVisibleItemPosition) {
-                    sudokuImage.loadImage();
+                    sudokuImage.loadImage(bmiddleUrls);
                     recyclerViewParent.removeOnScrollListener(this);
                 }
-
             }
         }
     }
@@ -174,8 +220,15 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
     }
 
     private void setRetweetText(BlogItemViewHolder holder, int position) {
+        String userName = "";
+        if(statuses.get(position).getRetweeted_status()==null){
+            return;
+        }
+        if(statuses.get(position).getRetweeted_status().getUser()!=null){
+            userName = statuses.get(position).getRetweeted_status().getUser().getName();
+        }
         holder.getTv_retweet_text().setText("@" +
-                statuses.get(position).getRetweeted_status().getUser().getName() +
+                userName +
                 ":" +
                 statuses.get(position).getRetweeted_status().getText());
     }

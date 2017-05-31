@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.cs.microblog.R;
 import com.cs.microblog.custom.PictureInfo;
+import com.cs.microblog.utils.WeiBoUtils;
 import com.facebook.common.references.CloseableReference;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
@@ -105,7 +106,12 @@ public class ImageWithType extends RelativeLayout {
         sdv_picture.setImageResource(R.color.colorGrayBlack);
     }
 
-    public void loadImageUrl(final Context context, final String url) {
+    interface CallBack{
+        void OnSuccess();
+        void OnFailure();
+    }
+
+    public void loadImageUrl(final Context context, final String url, final CallBack callBack) {
         Postprocessor longImagePostprocessor = new BasePostprocessor() {
 
             private CloseableReference<Bitmap> bitmapRef;
@@ -197,11 +203,12 @@ public class ImageWithType extends RelativeLayout {
                 } else {
                     setType(PictureInfo.PICTURE_NOMAL);
                 }
-
+                callBack.OnSuccess();
             }
 
             @Override
             public void onFailure(String id, Throwable throwable) {
+                callBack.OnFailure();
                 throwable.printStackTrace();
             }
         };

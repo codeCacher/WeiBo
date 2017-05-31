@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/WeiBo.iml" filepath="$PROJECT_DIR$/WeiBo.iml" />
       <module fileurl="file://$PROJECT_DIR$/WeiBo.iml" filepath="$PROJECT_DIR$/WeiBo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/WeiBo.iml" filepath="$PROJECT_DIR$/WeiBo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/microblog/microblog.iml" filepath="$PROJECT_DIR$/microblog/microblog.iml" />
       <module fileurl="file://$PROJECT_DIR$/microblog/microblog.iml" filepath="$PROJECT_DIR$/microblog/microblog.iml" />
       <module fileurl="file://$PROJECT_DIR$/microblog/microblog.iml" filepath="$PROJECT_DIR$/microblog/microblog.iml" />
     </modules>

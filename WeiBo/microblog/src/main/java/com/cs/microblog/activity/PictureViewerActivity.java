@@ -179,10 +179,6 @@ public class PictureViewerActivity extends AppCompatActivity {
         @Override
         public Object instantiateItem(ViewGroup container, final int position) {
             container.addView(viewList.get(position));
-//            SimpleDraweeView sdv_image_detail = (SimpleDraweeView) viewList.get(position).findViewById(R.id.sdv_image_detail);
-//            SubsamplingScaleImageView ssiv_image_detail = (SubsamplingScaleImageView) viewList.get(position).findViewById(R.id.ssiv_image_detail);
-//
-//            loadPicture(sdv_image_detail, ssiv_image_detail, position);
             return viewList.get(position);
         }
 
