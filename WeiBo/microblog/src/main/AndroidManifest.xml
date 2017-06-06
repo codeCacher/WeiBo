@@ -21,6 +21,7 @@
         <activity android:name=".activity.MainActivity" />
         <activity android:name=".activity.WebViewActivity" />
         <activity android:name=".activity.PictureViewerActivity" />
+        <activity android:name=".activity.BlogDetailActivity" />
     </application>
 
 </manifest>

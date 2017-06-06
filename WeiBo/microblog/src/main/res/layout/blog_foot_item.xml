@@ -4,7 +4,7 @@
     android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="38dp"
-    android:background="@color/colorGrayWhite"
+    android:background="@color/colorWhite"
     android:orientation="horizontal">
 
     <ImageView
@@ -16,6 +16,7 @@
 
     <TextView
         android:id="@+id/tv_foot_text"
+        android:textColor="@color/colorGrayBlack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="加载中" />

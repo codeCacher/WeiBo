@@ -1,10 +1,13 @@
 package com.cs.microblog.custom;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Administrator on 2017/4/27.
  */
 
-public class User{
+public class User implements Parcelable{
     private long id;
     private String screen_name;
     private String name;
@@ -31,6 +34,47 @@ public class User{
     private boolean follow_me;
     private int online_status;
     private int bi_followers_count;
+
+    protected User(Parcel in) {
+        id = in.readLong();
+        screen_name = in.readString();
+        name = in.readString();
+        province = in.readString();
+        city = in.readString();
+        location = in.readString();
+        description = in.readString();
+        url = in.readString();
+        profile_image_url = in.readString();
+        domain = in.readString();
+        gender = in.readString();
+        followers_count = in.readInt();
+        statuses_count = in.readInt();
+        favourites_count = in.readInt();
+        created_at = in.readString();
+        following = in.readByte() != 0;
+        allow_all_act_msg = in.readByte() != 0;
+        remark = in.readString();
+        geo_enabled = in.readByte() != 0;
+        verified = in.readByte() != 0;
+        allow_all_comment = in.readByte() != 0;
+        avatar_large = in.readString();
+        verified_reason = in.readString();
+        follow_me = in.readByte() != 0;
+        online_status = in.readInt();
+        bi_followers_count = in.readInt();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public long getId() {
         return id;
@@ -238,5 +282,40 @@ public class User{
 
     public void setBi_followers_count(int bi_followers_count) {
         this.bi_followers_count = bi_followers_count;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(id);
+        dest.writeString(screen_name);
+        dest.writeString(name);
+        dest.writeString(province);
+        dest.writeString(city);
+        dest.writeString(location);
+        dest.writeString(description);
+        dest.writeString(url);
+        dest.writeString(profile_image_url);
+        dest.writeString(domain);
+        dest.writeString(gender);
+        dest.writeInt(followers_count);
+        dest.writeInt(statuses_count);
+        dest.writeInt(favourites_count);
+        dest.writeString(created_at);
+        dest.writeByte((byte) (following ? 1 : 0));
+        dest.writeByte((byte) (allow_all_act_msg ? 1 : 0));
+        dest.writeString(remark);
+        dest.writeByte((byte) (geo_enabled ? 1 : 0));
+        dest.writeByte((byte) (verified ? 1 : 0));
+        dest.writeByte((byte) (allow_all_comment ? 1 : 0));
+        dest.writeString(avatar_large);
+        dest.writeString(verified_reason);
+        dest.writeByte((byte) (follow_me ? 1 : 0));
+        dest.writeInt(online_status);
+        dest.writeInt(bi_followers_count);
     }
 }

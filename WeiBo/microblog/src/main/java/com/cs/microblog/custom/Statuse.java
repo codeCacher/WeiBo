@@ -1,4 +1,7 @@
 package com.cs.microblog.custom;
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 
 /**
@@ -6,7 +9,7 @@ import java.util.ArrayList;
  * contain one blog information
  */
 
-public class Statuse {
+public class Statuse implements Parcelable{
     /**
      * 被转发的原微博信息字段，当该微博为转发微博时返回
      */
@@ -102,6 +105,41 @@ public class Statuse {
      *微博作者的用户信息字段
      */
     private User user;
+
+    protected Statuse(Parcel in) {
+        retweeted_status = in.readParcelable(Statuse.class.getClassLoader());
+        attitudes_count = in.readInt();
+        pic_urls = in.createTypedArrayList(PicUrl.CREATOR);
+        thumbnail_pic = in.readString();
+        bmiddle_pic = in.readString();
+        original_pic = in.readString();
+        created_at = in.readString();
+        idstr = in.readString();
+        id = in.readLong();
+        text = in.readString();
+        source = in.readString();
+        favorited = in.readByte() != 0;
+        truncated = in.readByte() != 0;
+        in_reply_to_status_id = in.readString();
+        in_reply_to_user_id = in.readString();
+        in_reply_to_screen_name = in.readString();
+        mid = in.readLong();
+        reposts_count = in.readInt();
+        comments_count = in.readInt();
+        user = in.readParcelable(User.class.getClassLoader());
+    }
+
+    public static final Creator<Statuse> CREATOR = new Creator<Statuse>() {
+        @Override
+        public Statuse createFromParcel(Parcel in) {
+            return new Statuse(in);
+        }
+
+        @Override
+        public Statuse[] newArray(int size) {
+            return new Statuse[size];
+        }
+    };
 
     //Geter and Setter
     public Statuse getRetweeted_status() {
@@ -297,16 +335,49 @@ public class Statuse {
     }
     public ArrayList<String> getBmiddlePicUrlList() {
         ArrayList<String> bmiddleUrls = new ArrayList<>();
-        for (PicUrl url : pic_urls) {
-            bmiddleUrls.add(url.getThumbnail_pic().replace("thumbnail", "bmiddle"));
+        if(pic_urls!=null){
+            for (PicUrl url : pic_urls) {
+                bmiddleUrls.add(url.getThumbnail_pic().replace("thumbnail", "bmiddle"));
+            }
         }
         return bmiddleUrls;
     }
     public ArrayList<String> getLargePicUrlList() {
         ArrayList<String> largeUrls = new ArrayList<>();
-        for (PicUrl url : pic_urls) {
-            largeUrls.add(url.getThumbnail_pic().replace("thumbnail", "large"));
+        if(pic_urls!=null) {
+            for (PicUrl url : pic_urls) {
+                largeUrls.add(url.getThumbnail_pic().replace("thumbnail", "large"));
+            }
         }
         return largeUrls;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeParcelable(retweeted_status, flags);
+        dest.writeInt(attitudes_count);
+        dest.writeTypedList(pic_urls);
+        dest.writeString(thumbnail_pic);
+        dest.writeString(bmiddle_pic);
+        dest.writeString(original_pic);
+        dest.writeString(created_at);
+        dest.writeString(idstr);
+        dest.writeLong(id);
+        dest.writeString(text);
+        dest.writeString(source);
+        dest.writeByte((byte) (favorited ? 1 : 0));
+        dest.writeByte((byte) (truncated ? 1 : 0));
+        dest.writeString(in_reply_to_status_id);
+        dest.writeString(in_reply_to_user_id);
+        dest.writeString(in_reply_to_screen_name);
+        dest.writeLong(mid);
+        dest.writeInt(reposts_count);
+        dest.writeInt(comments_count);
+        dest.writeParcelable(user, flags);
     }
 }

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorGrayWhite"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:background="@color/colorWhite"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <ImageView
+            android:id="@+id/iv_go_back"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:background="@drawable/selector_go_back" />
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="微博正文"
+            android:textColor="@color/colorBlack"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/iv_more"
+            android:layout_width="30dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp"
+            android:background="@drawable/toolbar_more" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2px"
+            android:layout_alignParentBottom="true"
+            android:background="@color/colorGrayBlack" />
+    </RelativeLayout>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srl_update"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_comment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+
+        </android.support.v7.widget.RecyclerView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="@color/colorWhite"
+        android:layout_height="50dp">
+
+        <include
+            android:id="@+id/blog_bottom_button"
+            layout="@layout/blog_item_bottom_bar" />
+    </RelativeLayout>
+
+</LinearLayout>

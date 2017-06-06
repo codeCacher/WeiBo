@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/colorGrayWhite"
+    android:layout_height="60dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="@color/colorWhite"
+        android:layout_height="50dp">
+        <TextView
+            android:text="转发 174"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/colorGrayBlack"
+            android:textSize="15sp"
+            android:id="@+id/tv_retweet_count"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:text="评论 174"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@id/tv_retweet_count"
+            android:textColor="@color/colorBlack"
+            android:textSize="15sp"
+            android:id="@+id/tv_comment_count"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_alignParentRight="true"
+            android:text="赞 174"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/colorGrayBlack"
+            android:textSize="15sp"
+            android:id="@+id/tv_like_count"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+</RelativeLayout>

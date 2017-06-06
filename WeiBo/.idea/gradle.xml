@@ -9,6 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/microblog" />
+            <option value="$PROJECT_DIR$/weiboSDK" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

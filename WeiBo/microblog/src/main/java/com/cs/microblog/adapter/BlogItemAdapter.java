@@ -3,6 +3,7 @@ package com.cs.microblog.adapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,13 +16,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.LinearLayout;
 import com.cs.microblog.R;
+import com.cs.microblog.activity.BlogDetailActivity;
 import com.cs.microblog.activity.PictureViewerActivity;
 import com.cs.microblog.custom.Statuse;
 import com.cs.microblog.utils.TimeUtils;
+import com.cs.microblog.utils.WeiBoUtils;
 import com.cs.microblog.view.BlogItemBottomButtonView;
 import com.cs.microblog.view.CircleImageView;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipeline;
+import com.sina.weibo.sdk.openapi.models.Status;
 import com.squareup.picasso.Picasso;
 import com.cs.microblog.custom.PicUrl;
 import java.text.ParseException;
@@ -46,7 +50,6 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
     public BlogItemAdapter(Context context, RecyclerView parent, @Nullable ArrayList<Statuse> statuses) {
         this.context = context;
         this.statuses = statuses;
-        this.mInflater = LayoutInflater.from(context);
         this.recyclerViewParent = parent;
         mHasFootItem = true;
     }
@@ -77,9 +80,9 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
     @Override
     public BlogItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == NORMAL_ITEM) {
-            return new BlogItemViewHolder(mInflater.inflate(R.layout.blog_item, null, false), NORMAL_ITEM);
+            return new BlogItemViewHolder(LayoutInflater.from(context).inflate(R.layout.blog_item, null, false), NORMAL_ITEM);
         } else {
-            return new BlogItemViewHolder(mInflater.inflate(R.layout.blog_foot_item, parent, false), FOOT_ITEM);
+            return new BlogItemViewHolder(LayoutInflater.from(context).inflate(R.layout.blog_foot_item, parent, false), FOOT_ITEM);
         }
     }
 
@@ -89,10 +92,9 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
         if (position == statuses.size()) {
             AnimationDrawable background = (AnimationDrawable) holder.getIv_loading().getDrawable();
             background.start();
-
         } else {
             final Statuse statuse = statuses.get(position);
-            String blogInfo = parseBlogInfo(position);
+            String blogInfo = WeiBoUtils.parseBlogTimeAndSourceInfo(statuse);
 
             Picasso.with(context).load(statuse.getUser().getProfile_image_url()).into(holder.iv_blogTitle);
 
@@ -172,6 +174,16 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
                     }
                 });
             }
+
+            holder.getLl_blog_item().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context,BlogDetailActivity.class);
+                    Bundle bundle = new Bundle();
+                    intent.putExtra("status",statuse);
+                    context.startActivity(intent);
+                }
+            });
         }
 
     }
@@ -240,59 +252,6 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
             return Integer.toString(count);
         }
     }
-    /**
-     * get blog information
-     *
-     * @param position item position
-     * @return the information string
-     */
-    private String parseBlogInfo(int position) {
-
-        //parse the create time
-        String created_at = statuses.get(position).getCreated_at();
-        StringBuffer blogInfo = new StringBuffer();
-        Calendar current = Calendar.getInstance();
-        Calendar creatCalendar;
-        try {
-            creatCalendar = TimeUtils.parseCalender(created_at);
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return "";
-        }
-        if (current.get(Calendar.YEAR) != creatCalendar.get(Calendar.YEAR)) {
-            blogInfo.append((creatCalendar.get(Calendar.YEAR) - current.get(Calendar.YEAR)) + "年前");
-        } else if (current.get(Calendar.MONTH) != creatCalendar.get(Calendar.MONTH)) {
-            blogInfo.append((creatCalendar.get(Calendar.MONTH) - current.get(Calendar.MONTH)) + "个月前");
-        } else if (current.get(Calendar.DAY_OF_YEAR) - creatCalendar.get(Calendar.DAY_OF_YEAR) > 2) {
-            blogInfo.append((creatCalendar.get(Calendar.DAY_OF_YEAR) - current.get(Calendar.DAY_OF_YEAR)) + "天前");
-        } else if (current.get(Calendar.DAY_OF_YEAR) - creatCalendar.get(Calendar.DAY_OF_YEAR) == 2) {
-            blogInfo.append("前天 " + creatCalendar.get(Calendar.HOUR_OF_DAY) + ":" + creatCalendar.get(Calendar.MINUTE));
-        } else if (current.get(Calendar.DAY_OF_YEAR) - creatCalendar.get(Calendar.DAY_OF_YEAR) == 1) {
-            blogInfo.append("昨天 " + creatCalendar.get(Calendar.HOUR_OF_DAY) + ":" + creatCalendar.get(Calendar.MINUTE));
-        } else if (current.get(Calendar.DAY_OF_YEAR) == creatCalendar.get(Calendar.DAY_OF_YEAR)) {
-            if (current.get(Calendar.HOUR_OF_DAY) != creatCalendar.get(Calendar.HOUR_OF_DAY)) {
-                blogInfo.append(current.get(Calendar.HOUR_OF_DAY) - creatCalendar.get(Calendar.HOUR_OF_DAY) + "小时前");
-            } else if (current.get(Calendar.HOUR_OF_DAY) == creatCalendar.get(Calendar.HOUR_OF_DAY)) {
-                if (current.get(Calendar.MINUTE) == creatCalendar.get(Calendar.MINUTE)) {
-                    blogInfo.append("1分钟前");
-                } else {
-                    blogInfo.append(current.get(Calendar.MINUTE) - creatCalendar.get(Calendar.MINUTE) + "分钟前");
-                }
-            }
-        }
-
-        //parse the source
-        blogInfo.append(" 来自 ");
-        String fullSource = statuses.get(position).getSource();
-        if (!TextUtils.isEmpty(fullSource)) {
-            String source = fullSource.substring(fullSource.indexOf(">") + 1, fullSource.lastIndexOf("<"));
-            blogInfo.append(source);
-
-            return blogInfo.toString();
-        } else {
-            return "";
-        }
-    }
 
     @Override
     public int getItemCount() {
@@ -320,6 +279,7 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
         private LinearLayout ll_retweet = null;
         private SudokuImage si_picture = null;
         private SudokuImage si_retweet_picture = null;
+        private LinearLayout ll_blog_item = null;
 
         BlogItemViewHolder(View itemView, int viewType) {
             super(itemView);
@@ -336,6 +296,8 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
                 tv_retweet_text = (TextView) itemView.findViewById(R.id.tv_retweet_text);
                 si_retweet_picture = (SudokuImage) itemView.findViewById(R.id.si_retweet_picture);
                 ll_retweet = (LinearLayout) itemView.findViewById(R.id.ll_retweet);
+
+                ll_blog_item = (LinearLayout) itemView.findViewById(R.id.ll_blog_item);
             } else {
                 tv_foot_text = (TextView) itemView.findViewById(R.id.tv_foot_text);
                 iv_loading = (ImageView) itemView.findViewById(R.id.iv_loading);
@@ -394,6 +356,10 @@ public class BlogItemAdapter extends RecyclerView.Adapter<BlogItemAdapter.BlogIt
 
         public SudokuImage getSi_retweet_picture() {
             return si_retweet_picture;
+        }
+
+        public LinearLayout getLl_blog_item() {
+            return ll_blog_item;
         }
     }
 }

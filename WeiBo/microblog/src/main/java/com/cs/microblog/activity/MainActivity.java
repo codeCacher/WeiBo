@@ -3,9 +3,7 @@ package com.cs.microblog.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.Message;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -18,31 +16,22 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.cs.microblog.R;
-import com.cs.microblog.custom.AccessTokenEntity;
-import com.cs.microblog.custom.AccessTokenService;
 import com.cs.microblog.custom.Constants;
-import com.cs.microblog.custom.GetHomeTimelineService;
-import com.cs.microblog.custom.HomeTimelineList;
-import com.cs.microblog.custom.Statuse;
 import com.cs.microblog.fragment.HomeFragment;
 import com.cs.microblog.fragment.HomeUnloginFragment;
+import com.cs.microblog.fragment.MeUnloginFragment;
+import com.cs.microblog.fragment.MessageUnloginFragment;
 import com.cs.microblog.utils.SharedPreferencesUtils;
-import com.cs.microblog.utils.WeiBoUtils;
 
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by Administrator on 2017/4/23.
  */
 
-public class MainActivity extends AppCompatActivity implements View.OnTouchListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "MainActivity";
     private ImageView iv_home;
@@ -59,6 +48,12 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     private FragmentManager mFragmentManager;
 
     private HomeFragment mHomeFragment;
+    private boolean isLogin;
+    private MessageUnloginFragment mFragmentUnloginMessage;
+    private MeUnloginFragment mFragmentUnloginMe;
+    private FragmentTransaction mFragmentTransaction;
+    private ArrayList<Fragment> FragmentList;
+    private int FragmentShowIndex=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,13 +61,17 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         setContentView(R.layout.activity_main);
 
         BindViews();
-        SetItemOnTouchListener();
+        mFragmentManager = getSupportFragmentManager();
+        FragmentList = new ArrayList<>();
+        SetItemOnClickedListener();
 
         //get the token from sp
         String token = SharedPreferencesUtils.getString(this, Constants.KEY_ACCESS_TOKEN, "");
         if (TextUtils.isEmpty(token)) {
+            isLogin = false;
             showUnloginHomeFragment();
         } else {
+            isLogin = true;
             Log.i(TAG, token);
             showHomeFragment();
         }
@@ -82,15 +81,23 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         CancelSelectAll();
         iv_home.setSelected(true);
         if (mHomeFragment == null) {
-            mFragmentManager = getSupportFragmentManager();
             mHomeFragment = new HomeFragment();
-            FragmentTransaction fragmentHomeTransaction = mFragmentManager.beginTransaction();
-            fragmentHomeTransaction.replace(R.id.ll_fragment, mHomeFragment);
-            fragmentHomeTransaction.commit();
+            mFragmentTransaction = mFragmentManager.beginTransaction();
+            if(FragmentList.size()!=0){
+                mFragmentTransaction.hide(FragmentList.get(FragmentShowIndex));
+            }
+            mFragmentTransaction.add(R.id.ll_fragment, mHomeFragment);
+            mFragmentTransaction.commit();
+
+            FragmentShowIndex = FragmentList.size();
+            FragmentList.add(mHomeFragment);
         } else {
-            FragmentTransaction fragmentHomeTransaction = mFragmentManager.beginTransaction();
-            fragmentHomeTransaction.add(R.id.ll_fragment, mHomeFragment);
-            fragmentHomeTransaction.commit();
+            mFragmentTransaction = mFragmentManager.beginTransaction();
+            mFragmentTransaction.hide(FragmentList.get(FragmentShowIndex));
+            mFragmentTransaction.show(mHomeFragment);
+            mFragmentTransaction.commit();
+
+            FragmentShowIndex = FragmentList.indexOf(mHomeFragment);
         }
     }
 
@@ -99,27 +106,82 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
         iv_home.setSelected(true);
         if (mFragmentUnloginHome == null) {
             mFragmentUnloginHome = new HomeUnloginFragment();
-            mFragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentHomeTransaction = mFragmentManager.beginTransaction();
-            fragmentHomeTransaction.add(R.id.ll_fragment, mFragmentUnloginHome);
-            fragmentHomeTransaction.commit();
-        } else {
-            FragmentTransaction fragmentHomeTransaction = mFragmentManager.beginTransaction();
-            fragmentHomeTransaction.show(mFragmentUnloginHome);
-            fragmentHomeTransaction.commit();
-        }
+            mFragmentTransaction = mFragmentManager.beginTransaction();
+            if(FragmentList.size()!=0){
+                mFragmentTransaction.hide(FragmentList.get(FragmentShowIndex));
+            }
+            mFragmentTransaction.add(R.id.ll_fragment, mFragmentUnloginHome);
+            mFragmentTransaction.commit();
 
+            FragmentShowIndex = FragmentList.size();
+            FragmentList.add(mFragmentUnloginHome);
+        } else {
+            mFragmentTransaction = mFragmentManager.beginTransaction();
+            mFragmentTransaction.hide(FragmentList.get(FragmentShowIndex));
+            mFragmentTransaction.show(mFragmentUnloginHome);
+            mFragmentTransaction.commit();
+
+            FragmentShowIndex = FragmentList.indexOf(mFragmentUnloginHome);
+        }
+    }
+
+    private void showUnloginMessageFragment() {
+        CancelSelectAll();
+        iv_message.setSelected(true);
+        if (mFragmentUnloginMessage == null) {
+            mFragmentUnloginMessage = new MessageUnloginFragment();
+            mFragmentTransaction = mFragmentManager.beginTransaction();
+            if(FragmentList.size()!=0){
+                mFragmentTransaction.hide(FragmentList.get(FragmentShowIndex));
+            }
+            mFragmentTransaction.add(R.id.ll_fragment, mFragmentUnloginMessage);
+            mFragmentTransaction.commit();
+
+            FragmentShowIndex = FragmentList.size();
+            FragmentList.add(mFragmentUnloginMessage);
+        } else {
+            mFragmentTransaction = mFragmentManager.beginTransaction();
+            mFragmentTransaction.hide(FragmentList.get(FragmentShowIndex));
+            mFragmentTransaction.show(mFragmentUnloginMessage);
+            mFragmentTransaction.commit();
+
+            FragmentShowIndex = FragmentList.indexOf(mFragmentUnloginMessage);
+        }
+    }
+
+    private void showUnloginMeFragment() {
+        CancelSelectAll();
+        iv_me.setSelected(true);
+        if (mFragmentUnloginMe == null) {
+            mFragmentUnloginMe = new MeUnloginFragment();
+            mFragmentTransaction = mFragmentManager.beginTransaction();
+            if(FragmentList.size()!=0){
+                mFragmentTransaction.hide(FragmentList.get(FragmentShowIndex));
+            }
+            mFragmentTransaction.add(R.id.ll_fragment, mFragmentUnloginMe);
+            mFragmentTransaction.commit();
+
+            FragmentShowIndex = FragmentList.size();
+            FragmentList.add(mFragmentUnloginMe);
+        } else {
+            mFragmentTransaction = mFragmentManager.beginTransaction();
+            mFragmentTransaction.hide(FragmentList.get(FragmentShowIndex));
+            mFragmentTransaction.show(mFragmentUnloginMe);
+            mFragmentTransaction.commit();
+
+            FragmentShowIndex = FragmentList.indexOf(mFragmentUnloginMe);
+        }
     }
 
     /**
      * set the item Relative Layout On Touch Listener
      */
-    private void SetItemOnTouchListener() {
-        rl_home.setOnTouchListener(this);
-        rl_message.setOnTouchListener(this);
-        rl_discover.setOnTouchListener(this);
-        rl_me.setOnTouchListener(this);
-        iv_add.setOnTouchListener(this);
+    private void SetItemOnClickedListener() {
+        rl_home.setOnClickListener(this);
+        rl_message.setOnClickListener(this);
+        rl_discover.setOnClickListener(this);
+        rl_me.setOnClickListener(this);
+        iv_add.setOnClickListener(this);
     }
 
     /**
@@ -145,97 +207,64 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     }
 
     @Override
-    public boolean onTouch(View v, MotionEvent event) {
+    public void onClick(View v) {
         switch (v.getId()) {
             case R.id.iv_add:
-                BottomBarAddTouchProcess(event);
+                BottomBarAddTouchProcess();
                 break;
             case R.id.rl_home:
-                BottomBarHomeTouchProcess(event);
+                BottomBarHomeTouchProcess();
                 break;
             case R.id.rl_message:
-                BottomBarMessageTouchProcess(event);
+                BottomBarMessageTouchProcess();
                 break;
             case R.id.rl_discover:
-                BottomBarDiscoverTouchProcess(event);
+                BottomBarDiscoverTouchProcess();
                 break;
             case R.id.rl_me:
-                BottomBarMeTouchProcess(event);
+                BottomBarMeTouchProcess();
                 break;
         }
-
-        return true;
     }
 
     /**
      * Process the home item touch event
-     *
-     * @param event touch event
      */
-    private void BottomBarHomeTouchProcess(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_UP:
-                showUnloginHomeFragment();
-                break;
+    private void BottomBarHomeTouchProcess() {
+        if(isLogin){
+            showHomeFragment();
+        }else {
+            showUnloginHomeFragment();
         }
     }
 
     /**
      * Process the message item touch event
-     *
-     * @param event touch event
      */
-    private void BottomBarMessageTouchProcess(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_UP:
-                CancelSelectAll();
-                iv_message.setSelected(true);
-                break;
-        }
+    private void BottomBarMessageTouchProcess( ) {
+        showUnloginMessageFragment();
     }
 
     /**
      * Process the discover item touch event
-     *
-     * @param event touch event
      */
-    private void BottomBarDiscoverTouchProcess(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_UP:
+    private void BottomBarDiscoverTouchProcess( ) {
                 CancelSelectAll();
                 iv_discover.setSelected(true);
-                break;
-        }
     }
 
     /**
      * Process the me item touch event
-     *
-     * @param event touch event
      */
-    private void BottomBarMeTouchProcess(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_UP:
-                CancelSelectAll();
-                iv_me.setSelected(true);
-                break;
-        }
+    private void BottomBarMeTouchProcess( ) {
+        showUnloginMeFragment();
     }
 
     /**
      * Process the add item touch event
-     *
-     * @param event touch event
      */
-    private void BottomBarAddTouchProcess(MotionEvent event) {
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                iv_add.setPressed(true);
-                break;
-            case MotionEvent.ACTION_UP:
-                iv_add.setPressed(false);
-                break;
-        }
+    private void BottomBarAddTouchProcess( ) {
+
     }
 
 
@@ -253,5 +282,6 @@ public class MainActivity extends AppCompatActivity implements View.OnTouchListe
     public static void openMainActivity(Context context, int flag) {
         context.startActivity(new Intent(context, MainActivity.class).setFlags(flag));
     }
+
 
 }

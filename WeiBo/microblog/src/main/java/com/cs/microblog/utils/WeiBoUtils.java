@@ -1,36 +1,36 @@
 package com.cs.microblog.utils;
 
 import android.content.Context;
-import android.graphics.drawable.Animatable;
-import android.net.Uri;
-import android.net.sip.SipAudioCall;
-import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.Log;
-import android.view.WindowManager;
 
+import com.cs.microblog.custom.CommentsShowList;
+import com.cs.microblog.custom.Constants;
+import com.cs.microblog.custom.GetCommentsShowService;
 import com.cs.microblog.custom.GetHomeTimelineService;
 import com.cs.microblog.custom.GetPublicTimelineService;
 import com.cs.microblog.custom.HomeTimelineList;
-import com.cs.microblog.custom.PictureInfo;
 import com.cs.microblog.custom.Statuse;
-import com.facebook.common.logging.FLog;
-import com.facebook.datasource.DataSubscriber;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.controller.BaseControllerListener;
-import com.facebook.drawee.controller.ControllerListener;
-import com.facebook.drawee.interfaces.DraweeController;
-import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.image.ImageInfo;
-import com.facebook.imagepipeline.image.QualityInfo;
-import com.squareup.picasso.Picasso;
+import com.google.gson.Gson;
+import com.sina.weibo.sdk.auth.Oauth2AccessToken;
+import com.sina.weibo.sdk.exception.WeiboException;
+import com.sina.weibo.sdk.net.RequestListener;
+import com.sina.weibo.sdk.openapi.CommentsAPI;
+import com.sina.weibo.sdk.openapi.models.Comment;
+import com.sina.weibo.sdk.openapi.models.CommentList;
 
-import java.util.ArrayList;
+import java.text.ParseException;
+import java.util.Calendar;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import rx.Observable;
+import rx.Subscriber;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Administrator on 2017/5/3.
@@ -100,75 +100,170 @@ public class WeiBoUtils {
             }
         });
     }
-    public interface onFinishGetPictureTypeListener {
-        void onSeccess(int Type);
-        void onFailed(Throwable throwable);
-    }
 
     /**
-     * get the picture's type through the url,
-     *
-     * @param url picture's url
-     * @return picture type
-     * PICTURE_NOMAL:normal picture
-     * PICTURE_LONG :long picture
-     * PICTURE_GIF  :gif picture
+     * interface when finish the requests to call back
      */
-    static private int Type;
-    public static void getPictureType(final Context context, String url, SimpleDraweeView simpleDraweeView, final onFinishGetPictureTypeListener Listener) {
-        //TODO 获取图片类型
-        Type = -1;
-        if(url.endsWith(".gif")) {
-            Type = PictureInfo.PICTURE_GIF;
-        }
-        BaseControllerListener<ImageInfo> controllerListener = new BaseControllerListener<ImageInfo>() {
-            @Override
-            public void onFinalImageSet(
-                    String id,
-                    @Nullable ImageInfo imageInfo,
-                    @Nullable Animatable anim) {
-                if (imageInfo == null) {
-                    Listener.onSeccess(Type);
-                    return;
-                }
-                int width = imageInfo.getWidth();
-                int height = imageInfo.getHeight();
-
-                WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-                int screenWidth = windowManager.getDefaultDisplay().getWidth();
-                int screenHeight = windowManager.getDefaultDisplay().getHeight();
-
-                if(Type == -1) {
-                    if(0.1f * height/width > 0.1f*screenHeight/screenWidth) {
-                        Type = PictureInfo.PICTURE_LONG;
-                    }else {
-                        Type = PictureInfo.PICTURE_NOMAL;
-                    }
-                }
-                Listener.onSeccess(Type);
-            }
-
-            @Override
-            public void onFailure(String id, Throwable throwable) {
-                Listener.onFailed(throwable);
-            }
-        };
-
-        Uri uri = Uri.parse(url);
-        DraweeController controller = Fresco.newDraweeControllerBuilder()
-                .setControllerListener(controllerListener)
-                .setUri(uri)
+    public interface CommentCallBack {
+        public abstract void onSuccess(Call<CommentsShowList> call, Response<CommentsShowList> response);
+        public abstract void onFailure(Call<CommentsShowList> call, Throwable t);
+    }
+    public static void getCommentShowLists(String token, long blogId, long sinceId,final CommentCallBack callBack) {
+        //get the Access Token
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.weibo.com/")
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        simpleDraweeView.setController(controller);
+        GetCommentsShowService getCommentsShowService = retrofit.create(GetCommentsShowService.class);
+        Call<CommentsShowList> accessToken = getCommentsShowService.getCommentsShowList(token, blogId, sinceId);
+        accessToken.enqueue(new Callback<CommentsShowList>() {
+            @Override
+            public void onResponse(Call<CommentsShowList> call, Response<CommentsShowList> response) {
+                callBack.onSuccess(call, response);
+            }
+
+            @Override
+            public void onFailure(Call<CommentsShowList> call, Throwable t) {
+                callBack.onFailure(call, t);
+            }
+        });
+    }
+
+    public static String parseBlogTimeAndSourceInfo(Statuse statuse) {
+
+        //parse the create time
+        String created_at = statuse.getCreated_at();
+        StringBuilder blogInfo = new StringBuilder();
+        Calendar current = Calendar.getInstance();
+        Calendar creatCalendar;
+        try {
+            creatCalendar = TimeUtils.parseCalender(created_at);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "";
+        }
+        if (current.get(Calendar.YEAR) != creatCalendar.get(Calendar.YEAR)) {
+            blogInfo.append((creatCalendar.get(Calendar.YEAR) - current.get(Calendar.YEAR)) + "年前");
+        } else if (current.get(Calendar.MONTH) != creatCalendar.get(Calendar.MONTH)) {
+            blogInfo.append((creatCalendar.get(Calendar.MONTH) - current.get(Calendar.MONTH)) + "个月前");
+        } else if (current.get(Calendar.DAY_OF_YEAR) - creatCalendar.get(Calendar.DAY_OF_YEAR) > 2) {
+            blogInfo.append((creatCalendar.get(Calendar.DAY_OF_YEAR) - current.get(Calendar.DAY_OF_YEAR)) + "天前");
+        } else if (current.get(Calendar.DAY_OF_YEAR) - creatCalendar.get(Calendar.DAY_OF_YEAR) == 2) {
+            blogInfo.append("前天 " + creatCalendar.get(Calendar.HOUR_OF_DAY) + ":" + creatCalendar.get(Calendar.MINUTE));
+        } else if (current.get(Calendar.DAY_OF_YEAR) - creatCalendar.get(Calendar.DAY_OF_YEAR) == 1) {
+            blogInfo.append("昨天 " + creatCalendar.get(Calendar.HOUR_OF_DAY) + ":" + creatCalendar.get(Calendar.MINUTE));
+        } else if (current.get(Calendar.DAY_OF_YEAR) == creatCalendar.get(Calendar.DAY_OF_YEAR)) {
+            if (current.get(Calendar.HOUR_OF_DAY) != creatCalendar.get(Calendar.HOUR_OF_DAY)) {
+                blogInfo.append(current.get(Calendar.HOUR_OF_DAY) - creatCalendar.get(Calendar.HOUR_OF_DAY) + "小时前");
+            } else if (current.get(Calendar.HOUR_OF_DAY) == creatCalendar.get(Calendar.HOUR_OF_DAY)) {
+                if (current.get(Calendar.MINUTE) == creatCalendar.get(Calendar.MINUTE)) {
+                    blogInfo.append("1分钟前");
+                } else {
+                    blogInfo.append(current.get(Calendar.MINUTE) - creatCalendar.get(Calendar.MINUTE) + "分钟前");
+                }
+            }
+        }
+
+        //parse the source
+        blogInfo.append(" 来自 ");
+        String fullSource = statuse.getSource();
+        if (!TextUtils.isEmpty(fullSource)) {
+            String source = fullSource.substring(fullSource.indexOf(">") + 1, fullSource.lastIndexOf("<"));
+            blogInfo.append(source);
+
+            return blogInfo.toString();
+        } else {
+            return "";
+        }
+    }
+
+    public static String parseCommentTime(Comment comment) {
+
+        //parse the create time
+        String created_at = comment.created_at;
+
+        Calendar current = Calendar.getInstance();
+        Calendar creatCalendar;
+        try {
+            creatCalendar = TimeUtils.parseCalender(created_at);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "";
+        }
+        return (creatCalendar.get(Calendar.MONTH)+1) + "-" +
+                creatCalendar.get(Calendar.DAY_OF_MONTH) + " " +
+                (creatCalendar.get(Calendar.HOUR_OF_DAY)) + ":" +
+                (creatCalendar.get(Calendar.MINUTE));
+    }
+
+    public interface GetCommentListCallBack {
+        void OnSuccess(CommentList commentList);
+        void OnFailure(WeiboException e);
+    }
+    /**
+     * 根据微博ID返回某条微博的评论列表。
+     *
+     * @param id         需要查询的微博ID。
+     * @param since_id   若指定此参数，则返回ID比since_id大的评论（即比since_id时间晚的评论），默认为0。
+     * @param max_id     若指定此参数，则返回ID小于或等于max_id的评论，默认为0。
+     * @param count      单页返回的记录条数，默认为50
+     * @param page       返回结果的页码，默认为1。
+     * @param authorType 作者筛选类型，0：全部、1：我关注的人、2：陌生人 ,默认为0。可为以下几种 :
+     */
+    public static void getCommentList(Context context, long id,
+                                      long since_id, long max_id,
+                                      int count, int page,
+                                      int authorType, final GetCommentListCallBack callBack){
+        Oauth2AccessToken oauth2AccessToken = new Oauth2AccessToken();
+        oauth2AccessToken.setToken(SharedPreferencesUtils.getString(context, Constants.KEY_ACCESS_TOKEN,""));
+        CommentsAPI commentsAPI = new CommentsAPI(context, Constants.APP_KEY,oauth2AccessToken);
+        commentsAPI.show(id, since_id, max_id, count, page, authorType, new RequestListener() {
+            @Override
+            public void onComplete(String s) {
+                CommentList commentList = CommentList.parse(s);
+                callBack.OnSuccess(commentList);
+            }
+
+            @Override
+            public void onWeiboException(WeiboException e) {
+                callBack.OnFailure(e);
+            }
+        });
     }
 
     /**
-     * get picture information
-     * @param url picture's url
-     * @return PictureInfo contain picture information
+     * 根据微博ID返回某条微博的评论列表。
+     *
+     * @param id         需要查询的微博ID。
+     * @param since_id   若指定此参数，则返回ID比since_id大的评论（即比since_id时间晚的评论），默认为0。
+     * @param max_id     若指定此参数，则返回ID小于或等于max_id的评论，默认为0。
+     * @param count      单页返回的记录条数，默认为50
+     * @param page       返回结果的页码，默认为1。
+     * @param authorType 作者筛选类型，0：全部、1：我关注的人、2：陌生人 ,默认为0。可为以下几种 :
      */
-    public static PictureInfo getPictrueInfo(String url) {
-        //TODO 获取图片信息
-        return null;
+    public static Observable<CommentList> getCommentList(final Context context, final long id,
+                                                         final long since_id, final long max_id,
+                                                         final int count, final int page,
+                                                         final int authorType) {
+        return Observable.create(new Observable.OnSubscribe<CommentList>() {
+            @Override
+            public void call(final Subscriber<? super CommentList> subscriber) {
+                Oauth2AccessToken oauth2AccessToken = new Oauth2AccessToken();
+                oauth2AccessToken.setToken(SharedPreferencesUtils.getString(context, Constants.KEY_ACCESS_TOKEN, ""));
+                CommentsAPI commentsAPI = new CommentsAPI(context, Constants.APP_KEY, oauth2AccessToken);
+                commentsAPI.show(id, since_id, max_id, count, page, authorType, new RequestListener() {
+                    @Override
+                    public void onComplete(String s) {
+                        CommentList commentList = CommentList.parse(s);
+                        subscriber.onNext(commentList);
+                    }
+
+                    @Override
+                    public void onWeiboException(WeiboException e) {
+                        subscriber.onError(e);
+                    }
+                });
+            }
+        });
     }
 }

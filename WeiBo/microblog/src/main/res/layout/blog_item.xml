@@ -6,10 +6,11 @@
     android:orientation="vertical">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/ll_blog_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="10dp"
-        android:background="@color/colorWhite"
+        android:background="@drawable/selector_background_color"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -100,8 +101,13 @@
                 android:layout_height="match_parent" />
         </LinearLayout>
 
-        <include
-            android:id="@+id/blog_bottom_button"
-            layout="@layout/blog_item_bottom_bar" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp">
+            <include
+                android:id="@+id/blog_bottom_button"
+                layout="@layout/blog_item_bottom_bar" />
+        </RelativeLayout>
+
     </LinearLayout>
 </LinearLayout>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/colorWhite"
+        android:shadowColor="@color/colorGrayWhite"
+        android:shadowDy="1"
+        android:shadowRadius="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="我"
+            android:textColor="@color/colorBlack"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="设置"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:textColor="@color/colorBlack"
+            android:layout_centerVertical="true"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_below="@id/rl_title"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:id="@+id/rl_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:id="@+id/rl_title_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/iv_back_image"
+                    android:src="@drawable/user_info_back_image"
+                    android:scaleType="centerCrop"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp" />
+                <ImageView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@drawable/avator_default"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="50dp"
+                    android:layout_alignBottom="@+id/iv_back_image"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:gravity="center"
+                android:layout_below="@id/rl_title_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/tv_notice"
+                    android:layout_marginTop="70dp"
+                    android:layout_centerHorizontal="true"
+                    android:textColor="@color/colorGrayBlack"
+                    android:gravity="center"
+                    android:text="登陆后，你的微博、相册、个人资\n料会显示在这里，展示给他人"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <LinearLayout
+                    android:id="@+id/ll_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_notice"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/bt_register"
+                        android:layout_width="120dp"
+                        android:layout_margin="10dp"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorGrayWhite"
+                        android:text="注册"
+                        android:textColor="@color/colorOrange" />
+
+                    <Button
+                        android:id="@+id/bt_login"
+                        android:layout_width="120dp"
+                        android:layout_margin="10dp"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorGrayWhite"
+                        android:text="登录"
+                        android:textColor="@color/colorBlack" />
+                </LinearLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>
