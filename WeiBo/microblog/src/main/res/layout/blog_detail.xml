@@ -29,7 +29,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@color/colorGrayBlack" />
 
             <TextView
                 android:textColor="@color/colorBlack"
@@ -41,7 +41,6 @@
                 android:layout_marginTop="10dp"
                 android:layout_toEndOf="@+id/iv_blog_title"
                 android:layout_toRightOf="@+id/iv_blog_title"
-                android:text="text"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -55,7 +54,6 @@
                 android:layout_marginTop="5dp"
                 android:layout_toEndOf="@+id/iv_blog_title"
                 android:layout_toRightOf="@+id/iv_blog_title"
-                android:text="text"
                 android:textColor="@color/colorGrayBlack"
                 android:textSize="13sp" />
         </RelativeLayout>
@@ -66,7 +64,6 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:layout_marginStart="10dp"
-            android:text="hahahahahahah"
             android:textColor="@color/colorBlack"
             android:textSize="17sp" />
 

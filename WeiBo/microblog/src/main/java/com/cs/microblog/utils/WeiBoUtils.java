@@ -2,16 +2,15 @@ package com.cs.microblog.utils;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.cs.microblog.custom.CommentsShowList;
 import com.cs.microblog.custom.Constants;
+import com.cs.microblog.custom.GetBlogByIDService;
 import com.cs.microblog.custom.GetCommentsShowService;
 import com.cs.microblog.custom.GetHomeTimelineService;
 import com.cs.microblog.custom.GetPublicTimelineService;
 import com.cs.microblog.custom.HomeTimelineList;
 import com.cs.microblog.custom.Statuse;
-import com.google.gson.Gson;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
@@ -26,11 +25,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.Subscriber;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by Administrator on 2017/5/3.
@@ -44,6 +42,7 @@ public class WeiBoUtils {
      */
     public interface CallBack {
         public abstract void onSuccess(Call<HomeTimelineList> call, Response<HomeTimelineList> response);
+
         public abstract void onFailure(Call<HomeTimelineList> call, Throwable t);
     }
 
@@ -80,7 +79,7 @@ public class WeiBoUtils {
      * @param token    access token
      * @param callBack call back when finished
      */
-    public static void getPublicTimelineLists(String token, long maxId, int count,final CallBack callBack) {
+    public static void getPublicTimelineLists(String token, long maxId, int count, final CallBack callBack) {
         //POST and get the Access Token
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.weibo.com/")
@@ -106,9 +105,11 @@ public class WeiBoUtils {
      */
     public interface CommentCallBack {
         public abstract void onSuccess(Call<CommentsShowList> call, Response<CommentsShowList> response);
+
         public abstract void onFailure(Call<CommentsShowList> call, Throwable t);
     }
-    public static void getCommentShowLists(String token, long blogId, long sinceId,final CommentCallBack callBack) {
+
+    public static void getCommentShowLists(String token, long blogId, long sinceId, final CommentCallBack callBack) {
         //get the Access Token
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.weibo.com/")
@@ -190,7 +191,7 @@ public class WeiBoUtils {
             e.printStackTrace();
             return "";
         }
-        return (creatCalendar.get(Calendar.MONTH)+1) + "-" +
+        return (creatCalendar.get(Calendar.MONTH) + 1) + "-" +
                 creatCalendar.get(Calendar.DAY_OF_MONTH) + " " +
                 (creatCalendar.get(Calendar.HOUR_OF_DAY)) + ":" +
                 (creatCalendar.get(Calendar.MINUTE));
@@ -198,8 +199,10 @@ public class WeiBoUtils {
 
     public interface GetCommentListCallBack {
         void OnSuccess(CommentList commentList);
+
         void OnFailure(WeiboException e);
     }
+
     /**
      * 根据微博ID返回某条微博的评论列表。
      *
@@ -213,10 +216,10 @@ public class WeiBoUtils {
     public static void getCommentList(Context context, long id,
                                       long since_id, long max_id,
                                       int count, int page,
-                                      int authorType, final GetCommentListCallBack callBack){
+                                      int authorType, final GetCommentListCallBack callBack) {
         Oauth2AccessToken oauth2AccessToken = new Oauth2AccessToken();
-        oauth2AccessToken.setToken(SharedPreferencesUtils.getString(context, Constants.KEY_ACCESS_TOKEN,""));
-        CommentsAPI commentsAPI = new CommentsAPI(context, Constants.APP_KEY,oauth2AccessToken);
+        oauth2AccessToken.setToken(SharedPreferencesUtils.getString(context, Constants.KEY_ACCESS_TOKEN, ""));
+        CommentsAPI commentsAPI = new CommentsAPI(context, Constants.APP_KEY, oauth2AccessToken);
         commentsAPI.show(id, since_id, max_id, count, page, authorType, new RequestListener() {
             @Override
             public void onComplete(String s) {
@@ -265,5 +268,16 @@ public class WeiBoUtils {
                 });
             }
         });
+    }
+
+    public static Observable<Statuse> getBlogByID(String token, long id) {
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl("https://api.weibo.com/")
+//                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//        GetBlogByIDService getBlogByIDService = retrofit.create(GetBlogByIDService.class);
+        GetBlogByIDService getBlogByIDService = RxService.create(GetBlogByIDService.class);
+        return getBlogByIDService.getBlogByID(token, id);
     }
 }

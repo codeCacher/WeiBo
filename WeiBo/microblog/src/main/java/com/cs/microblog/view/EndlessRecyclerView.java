@@ -8,6 +8,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.LinearLayout;
 
 import com.cs.microblog.R;
@@ -89,9 +90,7 @@ public class EndlessRecyclerView extends LinearLayout {
             @Override
             public void run() {
                 setDropDownRefreshState(false);
-                mAdapter.showFootItem();
                 mAdapter.setFootViewSuccess();
-                mAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -101,7 +100,7 @@ public class EndlessRecyclerView extends LinearLayout {
             @Override
             public void run() {
                 setDropDownRefreshState(false);
-                mAdapter.hideFootItem();
+                mAdapter.setFootViewFail();
             }
         });
     }
@@ -112,7 +111,6 @@ public class EndlessRecyclerView extends LinearLayout {
             public void run() {
                 mIsRefreshing = false;
                 mAdapter.setFootViewSuccess();
-                mAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -123,7 +121,6 @@ public class EndlessRecyclerView extends LinearLayout {
             public void run() {
                 mIsRefreshing = false;
                 mAdapter.hideFootItem();
-                mAdapter.notifyDataSetChanged();
             }
         });
     }
