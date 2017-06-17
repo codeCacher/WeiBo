@@ -111,4 +111,6 @@ public class Constants {
      * app attribute name space
      */
     public static final String ATTRS_NAMESPACE="http://schemas.android.com/apk/com.cs.microblog";
+
+    public static final String FILE_URI_BEGIN = "file://";
 }

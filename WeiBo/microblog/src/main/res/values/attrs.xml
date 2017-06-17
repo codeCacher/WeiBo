@@ -4,4 +4,9 @@
         <attr name="image_src" format="integer"/>
         <attr name="text" format="string"/>
     </declare-styleable>
+
+    <declare-styleable name="AddMoreItem">
+        <attr name="top_src" format="integer"/>
+        <attr name="bottom_text" format="string"/>
+    </declare-styleable>
 </resources>

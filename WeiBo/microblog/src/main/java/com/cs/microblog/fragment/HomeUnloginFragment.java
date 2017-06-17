@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.cs.microblog.R;
 import com.cs.microblog.activity.WebViewActivity;
 import com.cs.microblog.custom.Constants;
-import com.cs.microblog.view.ImageWithType;
 
 /**
  * Created by Administrator on 2017/4/25.
@@ -30,20 +29,24 @@ public class HomeUnloginFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        view = inflater.inflate(R.layout.fragment_home_unlogin, container,false);
+        view = inflater.inflate(R.layout.fragment_home_unlogin, container, false);
         bindView();
         setRotateAnimation();
         tv_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = Constants.AUTHORIZE_URL + "?" + Constants.KEY_CLIENT_ID + "=" + Constants.APP_KEY + "&" + Constants.KEY_REDIRECT_URI + "=" + Constants.REDIRECT_URI;
-                WebViewActivity.openUrl(getContext(),url);
+                String url = Constants.AUTHORIZE_URL + "?" +
+                        Constants.KEY_CLIENT_ID + "=" + Constants.APP_KEY + "&" +
+                        Constants.KEY_REDIRECT_URI + "=" + Constants.REDIRECT_URI + "&" +
+                        "scope" + "=" + "all";
+                WebViewActivity.openUrl(getContext(), url);
             }
         });
         return view;
     }
+
     private void setRotateAnimation() {
-        RotateAnimation rotateAnimation = new RotateAnimation(0,359,Animation.RELATIVE_TO_SELF,0.5f,Animation.RELATIVE_TO_SELF,0.5f);
+        RotateAnimation rotateAnimation = new RotateAnimation(0, 359, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
         rotateAnimation.setDuration(20000);
         rotateAnimation.setRepeatMode(Animation.RESTART);
         rotateAnimation.setRepeatCount(Animation.INFINITE);

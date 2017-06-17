@@ -1,9 +1,8 @@
-package com.cs.microblog.custom;
+package com.cs.microblog.bean;
 
-import android.database.Cursor;
+import com.cs.microblog.bean.Statuse;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Administrator on 2017/4/27.

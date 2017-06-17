@@ -1,4 +1,6 @@
-package com.cs.microblog.custom;
+package com.cs.microblog.bean;
+
+import com.cs.microblog.bean.User;
 
 /**
  * Created by Administrator on 2017/6/1.

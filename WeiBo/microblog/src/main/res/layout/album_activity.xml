@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_above="@+id/rl_bottom"
+        android:layout_below="@+id/top_bar"
+        android:id="@+id/rv_photo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <RelativeLayout
+        android:id="@+id/rl_bottom"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <View
+            android:layout_alignParentTop="true"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@android:color/darker_gray"/>
+
+        <TextView
+            android:padding="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/btn_disable_background"
+            android:id="@+id/tv_preview"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:text="预览"
+            android:textSize="12sp"
+            android:layout_marginLeft="10dp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <LinearLayout
+            android:padding="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:id="@+id/ll_origin"
+            android:gravity="center"
+            android:background="@drawable/btn_disable_background"
+            android:layout_toRightOf="@+id/tv_preview"
+            android:layout_marginLeft="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/iv_origin"
+                android:src="@drawable/choose_interest_unchecked"
+                android:layout_width="10dp"
+                android:layout_height="10dp" />
+
+            <TextView
+                android:layout_marginLeft="5dp"
+                android:id="@+id/tv_origin"
+                android:gravity="center"
+                android:layout_centerVertical="true"
+                android:text="原图"
+                android:textSize="12sp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <View
+        android:visibility="invisible"
+        android:id="@+id/v_shadow"
+        android:background="@color/shadowTransclute"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/top_bar"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:visibility="invisible"
+        android:paddingTop="40dp"
+        android:id="@+id/rv_bucket_name"
+        android:layout_width="match_parent"
+        android:layout_height="376dp"
+        android:background="@android:color/white"/>
+
+    <include
+        android:id="@+id/top_bar"
+        layout="@layout/album_top_bar"/>
+</RelativeLayout>

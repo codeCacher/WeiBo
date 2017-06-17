@@ -10,4 +10,7 @@
     <color name="colorGrayOrange">#81551b</color>
     <color name="colorBlack">#000000</color>
     <color name="colorBlueDark">#2a73ca</color>
+    <color name="translucent">#00000000</color>
+    <color name="shadowTransclute">#88000000</color>
+    <color name="transclute">#00fcfbfb</color>
 </resources>

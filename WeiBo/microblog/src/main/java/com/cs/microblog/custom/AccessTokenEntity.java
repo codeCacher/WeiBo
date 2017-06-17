@@ -6,11 +6,11 @@ package com.cs.microblog.custom;
 
 public class AccessTokenEntity {
     private String access_token;
-    private int expires_in;
+    private String expires_in;
     private String remind_in;
     private String uid;
 
-    public AccessTokenEntity(String access_token, int expires_in, String remind_in, String uid) {
+    public AccessTokenEntity(String access_token, String expires_in, String remind_in, String uid) {
         this.access_token = access_token;
         this.expires_in = expires_in;
         this.remind_in = remind_in;
@@ -25,11 +25,11 @@ public class AccessTokenEntity {
         this.access_token = access_token;
     }
 
-    public int getExpires_in() {
+    public String getExpires_in() {
         return expires_in;
     }
 
-    public void setExpires_in(int expires_in) {
+    public void setExpires_in(String expires_in) {
         this.expires_in = expires_in;
     }
 

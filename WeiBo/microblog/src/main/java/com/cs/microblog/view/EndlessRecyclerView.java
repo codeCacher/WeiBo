@@ -120,7 +120,7 @@ public class EndlessRecyclerView extends LinearLayout {
             @Override
             public void run() {
                 mIsRefreshing = false;
-                mAdapter.hideFootItem();
+                mAdapter.setFootViewNoMore();
             }
         });
     }

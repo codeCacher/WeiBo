@@ -52,7 +52,7 @@ public class LoginWebViewClient extends WebViewClient {
                         AccessTokenEntity accessTokenEntity = response.body();
                         //Write Token into the sp file
                         SharedPreferencesUtils.putString(context,Constants.KEY_ACCESS_TOKEN,accessTokenEntity.getAccess_token());
-                        SharedPreferencesUtils.putInt(context,Constants.KEY_EXPIRES_IN,accessTokenEntity.getExpires_in());
+                        SharedPreferencesUtils.putString(context,Constants.KEY_EXPIRES_IN,accessTokenEntity.getExpires_in());
                         SharedPreferencesUtils.putString(context,Constants.KEY_UID,accessTokenEntity.getUid());
 
                         Toast.makeText(context,"登录成功", Toast.LENGTH_SHORT).show();

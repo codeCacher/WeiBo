@@ -28,6 +28,7 @@ public class MyApplication extends Application {
         }
     };
     private ImagePipelineConfig imagePipelineConfig = ImagePipelineConfig.newBuilder(this)
+            .setDownsampleEnabled(true)
             .setBitmapMemoryCacheParamsSupplier(mSupplierMemoryCacheParams).build();
 
     @Override

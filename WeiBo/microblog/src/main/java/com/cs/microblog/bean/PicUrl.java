@@ -1,8 +1,7 @@
-package com.cs.microblog.custom;
+package com.cs.microblog.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
 /**
  * Created by Administrator on 2017/5/1.
  */

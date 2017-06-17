@@ -3,20 +3,25 @@ package com.cs.microblog.utils;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.cs.microblog.custom.CommentsShowList;
+import com.cs.microblog.bean.CommentsShowList;
 import com.cs.microblog.custom.Constants;
 import com.cs.microblog.custom.GetBlogByIDService;
 import com.cs.microblog.custom.GetCommentsShowService;
 import com.cs.microblog.custom.GetHomeTimelineService;
 import com.cs.microblog.custom.GetPublicTimelineService;
-import com.cs.microblog.custom.HomeTimelineList;
-import com.cs.microblog.custom.Statuse;
+import com.cs.microblog.bean.HomeTimelineList;
+import com.cs.microblog.bean.Repost;
+import com.cs.microblog.bean.RepostList;
+import com.cs.microblog.bean.Statuse;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
 import com.sina.weibo.sdk.openapi.CommentsAPI;
+import com.sina.weibo.sdk.openapi.UsersAPI;
+import com.sina.weibo.sdk.openapi.legacy.StatusesAPI;
 import com.sina.weibo.sdk.openapi.models.Comment;
 import com.sina.weibo.sdk.openapi.models.CommentList;
+import com.sina.weibo.sdk.openapi.models.User;
 
 import java.text.ParseException;
 import java.util.Calendar;
@@ -25,7 +30,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import rx.Observable;
 import rx.Subscriber;
@@ -197,6 +201,25 @@ public class WeiBoUtils {
                 (creatCalendar.get(Calendar.MINUTE));
     }
 
+    public static String parseRepostTime(Repost repost) {
+
+        //parse the create time
+        String created_at = repost.created_at;
+
+        Calendar current = Calendar.getInstance();
+        Calendar creatCalendar;
+        try {
+            creatCalendar = TimeUtils.parseCalender(created_at);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return "";
+        }
+        return (creatCalendar.get(Calendar.MONTH) + 1) + "-" +
+                creatCalendar.get(Calendar.DAY_OF_MONTH) + " " +
+                (creatCalendar.get(Calendar.HOUR_OF_DAY)) + ":" +
+                (creatCalendar.get(Calendar.MINUTE));
+    }
+
     public interface GetCommentListCallBack {
         void OnSuccess(CommentList commentList);
 
@@ -279,5 +302,70 @@ public class WeiBoUtils {
 //        GetBlogByIDService getBlogByIDService = retrofit.create(GetBlogByIDService.class);
         GetBlogByIDService getBlogByIDService = RxService.create(GetBlogByIDService.class);
         return getBlogByIDService.getBlogByID(token, id);
+    }
+
+    /**
+     * 获取指定微博的转发微博列表
+     *
+     * @param id         需要查询的微博ID。
+     * @param since_id   若指定此参数，则返回ID比since_id大的微博（即比since_id时间晚的微博），默认为0
+     * @param max_id     若指定此参数，则返回ID小于或等于max_id的微博，默认为0
+     * @param count      单页返回的记录条数，默认为50
+     * @param page       返回结果的页码，默认为1
+     * @param authorType 作者筛选类型，0：全部、1：我关注的人、2：陌生人，默认为0。可为以下几种：
+     */
+    public static Observable<RepostList> getRepostList(final Context context, final long id,
+                                                       final long since_id, final long max_id,
+                                                       final int count, final int page,
+                                                       final int authorType) {
+        return Observable.create(new Observable.OnSubscribe<RepostList>() {
+            @Override
+            public void call(final Subscriber<? super RepostList> subscriber) {
+                Oauth2AccessToken oauth2AccessToken = new Oauth2AccessToken();
+                oauth2AccessToken.setToken(SharedPreferencesUtils.getString(context, Constants.KEY_ACCESS_TOKEN, ""));
+//                oauth2AccessToken.setUid(SharedPreferencesUtils.getString(context, Constants.KEY_UID, ""));
+//                oauth2AccessToken.setExpiresIn(SharedPreferencesUtils.getString(context, Constants.KEY_EXPIRES_IN, ""));
+
+                StatusesAPI statusesAPI = new StatusesAPI(context, Constants.APP_KEY, oauth2AccessToken);
+                statusesAPI.repostTimeline(id, since_id, max_id, count, page, authorType, new RequestListener() {
+                    @Override
+                    public void onComplete(String s) {
+                        RepostList repostList = RepostList.parse(s);
+                        subscriber.onNext(repostList);
+                    }
+
+                    @Override
+                    public void onWeiboException(WeiboException e) {
+                        subscriber.onError(e);
+                    }
+                });
+            }
+        });
+    }
+
+
+    public static Observable<User> getUserInfo(final Context context) {
+        return Observable.create(new Observable.OnSubscribe<User>() {
+            @Override
+            public void call(final Subscriber<? super User> subscriber) {
+                Oauth2AccessToken oauth2AccessToken = new Oauth2AccessToken();
+                oauth2AccessToken.setToken(SharedPreferencesUtils.getString(context, Constants.KEY_ACCESS_TOKEN, ""));
+                UsersAPI usersAPI = new UsersAPI(context, Constants.APP_KEY, oauth2AccessToken);
+                String uidStr = SharedPreferencesUtils.getString(context, Constants.KEY_UID, "");
+                long uid = Long.parseLong(uidStr);
+                usersAPI.show(uid, new RequestListener() {
+                    @Override
+                    public void onComplete(String s) {
+                        User user = User.parse(s);
+                        subscriber.onNext(user);
+                    }
+
+                    @Override
+                    public void onWeiboException(WeiboException e) {
+                        subscriber.onError(e);
+                    }
+                });
+            }
+        });
     }
 }

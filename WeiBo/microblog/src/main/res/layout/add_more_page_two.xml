@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:weibo="http://schemas.android.com/apk/com.cs.microblog">
+
+    <TableRow>
+
+        <com.cs.microblog.view.AddMoreItem
+            weibo:top_src="@drawable/tabbar_compose_topic_neo"
+            weibo:bottom_text="文字"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <com.cs.microblog.view.AddMoreItem
+            weibo:top_src="@drawable/tabbar_compose_redpacket"
+            weibo:bottom_text="拍照"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <com.cs.microblog.view.AddMoreItem
+            weibo:top_src="@drawable/tabbar_compose_friends_neo"
+            weibo:bottom_text="相册"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <com.cs.microblog.view.AddMoreItem
+            weibo:top_src="@drawable/tabbar_compose_music_neo"
+            weibo:bottom_text="直播"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+
+    </TableRow>
+    <TableRow>
+
+        <com.cs.microblog.view.AddMoreItem
+            weibo:top_src="@drawable/tabbar_compose_shopping_neo"
+            weibo:bottom_text="光影秀"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <com.cs.microblog.view.AddMoreItem
+            weibo:top_src="@drawable/tabbar_compose_miaopai_neo"
+            weibo:bottom_text="头条文章"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <com.cs.microblog.view.AddMoreItem
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+        <com.cs.microblog.view.AddMoreItem
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"/>
+
+
+    </TableRow>
+
+
+</TableLayout>

@@ -2,16 +2,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.cs.microblog">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
-    <application android:name=".global.MyApplication"
+    <application
+        android:name=".global.MyApplication"
         android:allowBackup="true"
         android:icon="@drawable/d_erha"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.SplashActivity" android:theme="@style/SplashTheme">
+        <activity
+            android:name=".activity.SplashActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,6 +26,15 @@
         <activity android:name=".activity.WebViewActivity" />
         <activity android:name=".activity.PictureViewerActivity" />
         <activity android:name=".activity.BlogDetailActivity" />
+        <activity
+            android:name=".activity.AddMoreActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+        <activity
+            android:name=".activity.PostBlogActivity"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".activity.AlbumActivity" />
+
+        <service android:name=".service.BlogPostService" />
     </application>
 
 </manifest>

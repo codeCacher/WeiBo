@@ -15,8 +15,9 @@
             android:textSize="15sp"
             android:id="@+id/tv_retweet_count"
             android:layout_centerVertical="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:gravity="center"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content" />
         <TextView
             android:text="评论 174"
             android:layout_marginLeft="20dp"
@@ -26,7 +27,8 @@
             android:id="@+id/tv_comment_count"
             android:layout_centerVertical="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:gravity="center"
+            android:layout_height="match_parent" />
         <TextView
             android:layout_alignParentRight="true"
             android:text="赞 174"
@@ -36,6 +38,7 @@
             android:id="@+id/tv_like_count"
             android:layout_centerVertical="true"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:gravity="center"
+            android:layout_height="match_parent" />
     </RelativeLayout>
 </RelativeLayout>

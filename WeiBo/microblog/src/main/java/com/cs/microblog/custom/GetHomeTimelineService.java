@@ -1,6 +1,6 @@
 package com.cs.microblog.custom;
 
-import android.support.annotation.Nullable;
+import com.cs.microblog.bean.HomeTimelineList;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

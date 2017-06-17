@@ -23,6 +23,7 @@ public abstract class EndlessRecyclerViewAdapter<VH extends EndlessRecyclerViewH
     public static final int FOOT_ITEM_MORE = 1;
     public static final int FOOT_ITEM_FAIL = 2;
     public static final int FOOT_ITEM_LOADING = 3;
+    public static final int FOOT_ITEM_NOMORE = 4;
 
     private Context context;
 
@@ -49,7 +50,7 @@ public abstract class EndlessRecyclerViewAdapter<VH extends EndlessRecyclerViewH
      */
     public void hideFootItem() {
         mFootViewState = FOOT_ITEM_GONE;
-        this.notifyDataSetChanged();
+        this.notifyItemChanged(getItemCount()-1);
     }
 
     public int footItemState() {
@@ -58,7 +59,8 @@ public abstract class EndlessRecyclerViewAdapter<VH extends EndlessRecyclerViewH
 
     public void setFootViewSuccess() {
         mFootViewState = FOOT_ITEM_MORE;
-        this.notifyDataSetChanged();
+        this.notifyItemChanged(getItemCount()-1);
+
     }
 
     /**
@@ -66,7 +68,8 @@ public abstract class EndlessRecyclerViewAdapter<VH extends EndlessRecyclerViewH
      */
     public void setFootViewFail() {
         mFootViewState = FOOT_ITEM_FAIL;
-        this.notifyDataSetChanged();
+        this.notifyItemChanged(getItemCount()-1);
+
     }
 
     /**
@@ -74,7 +77,14 @@ public abstract class EndlessRecyclerViewAdapter<VH extends EndlessRecyclerViewH
      */
     public void setFootViewLoading() {
         mFootViewState = FOOT_ITEM_LOADING;
-        this.notifyDataSetChanged();
+        this.notifyItemChanged(getItemCount()-1);
+
+    }
+
+    public void setFootViewNoMore() {
+        mFootViewState = FOOT_ITEM_NOMORE;
+        this.notifyItemChanged(getItemCount()-1);
+
     }
 
     /**
@@ -118,24 +128,29 @@ public abstract class EndlessRecyclerViewAdapter<VH extends EndlessRecyclerViewH
             BoundFootView(holder);
             switch (mFootViewState) {
                 case FOOT_ITEM_GONE:
-                    mFootView.setVisibility(View.GONE);
+                    holder.itemView.setVisibility(View.GONE);
                     break;
                 case FOOT_ITEM_LOADING:
-                    mFootView.setVisibility(View.VISIBLE);
+                    holder.itemView.setVisibility(View.VISIBLE);
                     AnimationDrawable background = (AnimationDrawable) holder.iv_loading.getDrawable();
                     background.start();
-                    iv_loading.setVisibility(View.VISIBLE);
-                    tv_foot_text.setText("加载中....");
+                    holder.iv_loading.setVisibility(View.VISIBLE);
+                    holder.tv_foot_text.setText("加载中....");
                     break;
                 case FOOT_ITEM_FAIL:
-                    mFootView.setVisibility(View.VISIBLE);
-                    iv_loading.setVisibility(View.GONE);
-                    tv_foot_text.setText("还没有联网哦，去设置网络吧");
+                    holder.itemView.setVisibility(View.VISIBLE);
+                    holder.iv_loading.setVisibility(View.GONE);
+                    holder.tv_foot_text.setText("还没有联网哦，去设置网络吧");
                     break;
                 case FOOT_ITEM_MORE:
-                    mFootView.setVisibility(View.VISIBLE);
-                    iv_loading.setVisibility(View.GONE);
-                    tv_foot_text.setText("更多...");
+                    holder.itemView.setVisibility(View.VISIBLE);
+                    holder.iv_loading.setVisibility(View.GONE);
+                    holder.tv_foot_text.setText("更多...");
+                    break;
+                case FOOT_ITEM_NOMORE:
+                    holder.itemView.setVisibility(View.VISIBLE);
+                    holder.iv_loading.setVisibility(View.GONE);
+                    holder.tv_foot_text.setText("没有更多了");
                     break;
             }
         } else {

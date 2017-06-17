@@ -2,7 +2,6 @@ package com.cs.microblog.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,7 +15,7 @@ import android.widget.TextView;
 import com.cs.microblog.R;
 import com.cs.microblog.activity.BlogDetailActivity;
 import com.cs.microblog.activity.PictureViewerActivity;
-import com.cs.microblog.custom.Statuse;
+import com.cs.microblog.bean.Statuse;
 import com.cs.microblog.utils.WeiBoUtils;
 import com.cs.microblog.view.BlogItemBottomButtonView;
 import com.cs.microblog.view.CircleImageView;

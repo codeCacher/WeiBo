@@ -13,7 +13,7 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 
 import com.cs.microblog.R;
-import com.cs.microblog.custom.PictureInfo;
+import com.cs.microblog.bean.PictureInfo;
 
 import java.util.ArrayList;
 

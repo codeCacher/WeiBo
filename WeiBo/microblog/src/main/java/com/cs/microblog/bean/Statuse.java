@@ -1,4 +1,4 @@
-package com.cs.microblog.custom;
+package com.cs.microblog.bean;
 import android.os.Parcel;
 import android.os.Parcelable;
 

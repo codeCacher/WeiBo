@@ -11,7 +11,9 @@ import android.widget.TextView;
 
 import com.cs.microblog.R;
 import com.cs.microblog.activity.PictureViewerActivity;
-import com.cs.microblog.custom.Statuse;
+import com.cs.microblog.bean.Repost;
+import com.cs.microblog.bean.RepostList;
+import com.cs.microblog.bean.Statuse;
 import com.cs.microblog.utils.WeiBoUtils;
 import com.cs.microblog.view.CircleImageView;
 import com.cs.microblog.view.EndlessRecyclerViewAdapter;
@@ -30,35 +32,49 @@ import butterknife.ButterKnife;
  * Created by Administrator on 2017/6/2.
  */
 
-public class CommentDetailAdapter extends EndlessRecyclerViewAdapter<EndlessRecyclerViewHolder> {
+public class BlogDetailAdapter extends EndlessRecyclerViewAdapter<EndlessRecyclerViewHolder> {
 
     private static final int ITEM_TYPE_BLOG = 1;
     private static final int ITEM_TYPE_SWITCH = 2;
-    private static final int ITEM_TYPE_COMMENT = 3;
+    private static final int ITEM_TYPE_LIST = 3;
+
+    private static final int LIST_COMMENT = 0;
+    private static final int LIST_REPOST = 1;
+
 
     public Statuse mStatus;
     private final Context mContext;
     public CommentList mCommentLists;
+    public RepostList mRepostList;
+    private int mSelectedList;
 
-    public CommentDetailAdapter(Context context, CommentList commentList, Statuse status) {
+    public BlogDetailAdapter(Context context, Statuse status) {
         super(context);
+        mSelectedList = LIST_COMMENT;
         mContext = context;
-        if (commentList == null || commentList.commentList == null) {
-            mCommentLists = new CommentList();
-            mCommentLists.commentList = new ArrayList<>();
-        } else {
-            mCommentLists = commentList;
-        }
+        mCommentLists = new CommentList();
+        mCommentLists.commentList = new ArrayList<>();
+        mRepostList = new RepostList();
+        mRepostList.repostList = new ArrayList<>();
         mStatus = status;
     }
 
     @Override
     public int getEndlessItemCount() {
-        if (mCommentLists == null || mCommentLists.commentList == null) {
-            mCommentLists = new CommentList();
-            mCommentLists.commentList = new ArrayList<>();
+        if(mSelectedList == LIST_COMMENT){
+            if (mCommentLists == null || mCommentLists.commentList == null) {
+                mCommentLists = new CommentList();
+                mCommentLists.commentList = new ArrayList<>();
+            }
+            return mCommentLists.commentList.size() + 2;
+        } else if(mSelectedList==LIST_REPOST) {
+            if (mRepostList == null || mRepostList.repostList == null) {
+                mRepostList = new RepostList();
+                mRepostList.repostList = new ArrayList<>();
+            }
+            return mRepostList.repostList.size() + 2;
         }
-        return mCommentLists.commentList.size() + 2;
+        return 0;
     }
 
     @Override
@@ -68,7 +84,7 @@ public class CommentDetailAdapter extends EndlessRecyclerViewAdapter<EndlessRecy
         } else if (position == 1) {
             return ITEM_TYPE_SWITCH;
         } else {
-            return ITEM_TYPE_COMMENT;
+            return ITEM_TYPE_LIST;
         }
     }
 
@@ -78,8 +94,12 @@ public class CommentDetailAdapter extends EndlessRecyclerViewAdapter<EndlessRecy
             return new BlogViewHolder(LayoutInflater.from(mContext).inflate(R.layout.blog_detail, parent, false), viewType);
         } else if (viewType == ITEM_TYPE_SWITCH) {
             return new SwitchViewHolder(LayoutInflater.from(mContext).inflate(R.layout.blog_detail_switch_comment_retween, parent, false), viewType);
-        } else if (viewType == ITEM_TYPE_COMMENT) {
-            return new CommentViewHolder(LayoutInflater.from(mContext).inflate(R.layout.blog_comment_item, null, false), viewType);
+        } else if (viewType == ITEM_TYPE_LIST) {
+            if(mSelectedList ==LIST_COMMENT){
+                return new CommentViewHolder(LayoutInflater.from(mContext).inflate(R.layout.blog_comment_item, null, false), viewType);
+            } else {
+                return new RepostViewHolder(LayoutInflater.from(mContext).inflate(R.layout.blog_repost_item, null, false), viewType);
+            }
         } else return null;
     }
 
@@ -87,7 +107,7 @@ public class CommentDetailAdapter extends EndlessRecyclerViewAdapter<EndlessRecy
     public void onBindEndlessViewHolder(EndlessRecyclerViewHolder holder, int position) {
         int itemViewType = getItemViewType(position);
         if (itemViewType == ITEM_TYPE_BLOG) {
-            if(mStatus==null){
+            if (mStatus == null) {
                 return;
             }
             final BlogViewHolder blogHolder = (BlogViewHolder) holder;
@@ -168,7 +188,7 @@ public class CommentDetailAdapter extends EndlessRecyclerViewAdapter<EndlessRecy
                 });
             }
         } else if (itemViewType == ITEM_TYPE_SWITCH) {
-            SwitchViewHolder switchHolder = (SwitchViewHolder)holder;
+            final SwitchViewHolder switchHolder = (SwitchViewHolder) holder;
             String retweetCountStr = Integer.toString(mStatus.getReposts_count());
             String commentCountStr = Integer.toString(mStatus.getComments_count());
             String likeCountStr = Integer.toString(mStatus.getAttitudes_count());
@@ -176,16 +196,55 @@ public class CommentDetailAdapter extends EndlessRecyclerViewAdapter<EndlessRecy
             switchHolder.tvRetweetCount.setText("转发 " + retweetCountStr);
             switchHolder.tvCommentCount.setText("评论 " + commentCountStr);
             switchHolder.tvLikeCount.setText("赞 " + likeCountStr);
-        } else if (itemViewType == ITEM_TYPE_COMMENT) {
-            CommentViewHolder commentHolder = (CommentViewHolder)holder;
-            Comment comment = mCommentLists.commentList.get(position - 2);
-            String blogInfo = WeiBoUtils.parseCommentTime(comment);
 
-            Picasso.with(mContext).load(comment.user.profile_image_url).into(commentHolder.ivCommentTitle);
+            switchHolder.tvRetweetCount.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switchHolder.tvRetweetCount.setTextColor(mContext.getResources().getColor(R.color.colorBlack));
+                    switchHolder.tvCommentCount.setTextColor(mContext.getResources().getColor(R.color.colorGrayBlack));
+                    mSelectedList = LIST_REPOST;
+                    BlogDetailAdapter.this.notifyDataSetChanged();
+                }
+            });
+            switchHolder.tvCommentCount.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switchHolder.tvRetweetCount.setTextColor(mContext.getResources().getColor(R.color.colorGrayBlack));
+                    switchHolder.tvCommentCount.setTextColor(mContext.getResources().getColor(R.color.colorBlack));
+                    mSelectedList = LIST_COMMENT;
+                    BlogDetailAdapter.this.notifyDataSetChanged();
+                }
+            });
+            switchHolder.tvLikeCount.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //TODO
+                }
+            });
 
-            commentHolder.tvCommentUserName.setText(comment.user.name);
-            commentHolder.tvCommentText.setText(comment.text);
-            commentHolder.tvCommentInfo.setText(blogInfo);
+        } else if (itemViewType == ITEM_TYPE_LIST) {
+            if(mSelectedList==LIST_COMMENT){
+                CommentViewHolder commentHolder = (CommentViewHolder) holder;
+                Comment comment = mCommentLists.commentList.get(position - 2);
+                String blogInfo = WeiBoUtils.parseCommentTime(comment);
+
+                Picasso.with(mContext).load(comment.user.profile_image_url).into(commentHolder.ivCommentTitle);
+
+                commentHolder.tvCommentUserName.setText(comment.user.name);
+                commentHolder.tvCommentText.setText(comment.text);
+                commentHolder.tvCommentInfo.setText(blogInfo);
+            } else if(mSelectedList == LIST_REPOST){
+                RepostViewHolder repostHolder = (RepostViewHolder) holder;
+                Repost repost = mRepostList.repostList.get(position - 2);
+                String blogInfo = WeiBoUtils.parseRepostTime(repost);
+
+                Picasso.with(mContext).load(repost.user.profile_image_url).into(repostHolder.ivRepostTitle);
+
+                repostHolder.tvRepostUserName.setText(repost.user.name);
+                repostHolder.tvRepostText.setText(repost.text);
+                repostHolder.tvRepostInfo.setText(blogInfo);
+            }
+
         }
     }
 
@@ -242,12 +301,30 @@ public class CommentDetailAdapter extends EndlessRecyclerViewAdapter<EndlessRecy
         TextView tvCommentText;
         @BindView(R.id.ll_comment_item)
         RelativeLayout llCommentItem;
+
         CommentViewHolder(View itemView, int viewType) {
             super(itemView, viewType);
             ButterKnife.bind(this, itemView);
         }
     }
 
+    class RepostViewHolder extends EndlessRecyclerViewHolder {
+        @BindView(R.id.iv_repost_title)
+        CircleImageView ivRepostTitle;
+        @BindView(R.id.tv_repost_user_name)
+        TextView tvRepostUserName;
+        @BindView(R.id.tv_repost_info)
+        TextView tvRepostInfo;
+        @BindView(R.id.tv_repost_text)
+        TextView tvRepostText;
+        @BindView(R.id.ll_repost_item)
+        RelativeLayout llRepostItem;
+
+        RepostViewHolder(View itemView, int viewType) {
+            super(itemView, viewType);
+            ButterKnife.bind(this, itemView);
+        }
+    }
 
     private void setPicture(SudokuImage sudokuImage, ArrayList<String> bmiddleUrls) {
         sudokuImage.setImageUrls(bmiddleUrls);

@@ -1,19 +1,21 @@
 package com.cs.microblog.activity;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.cs.microblog.R;
 import com.cs.microblog.custom.Constants;
@@ -23,9 +25,11 @@ import com.cs.microblog.fragment.MeUnloginFragment;
 import com.cs.microblog.fragment.MessageUnloginFragment;
 import com.cs.microblog.utils.SharedPreferencesUtils;
 
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by Administrator on 2017/4/23.
@@ -34,16 +38,40 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "MainActivity";
-    private ImageView iv_home;
-    private ImageView iv_message;
-    private ImageView iv_discover;
-    private ImageView iv_me;
-    private ImageView iv_add;
-    private RelativeLayout rl_home;
+    @BindView(R.id.ll_fragment)
+    LinearLayout ll_fragment;
+    @BindView(R.id.iv_home)
+    ImageView iv_home;
+    @BindView(R.id.tv_home)
+    TextView tv_home;
+    @BindView(R.id.rl_home)
+    RelativeLayout rl_home;
+    @BindView(R.id.iv_message)
+    ImageView iv_message;
+    @BindView(R.id.tv_message)
+    TextView tv_message;
+    @BindView(R.id.rl_message)
+    RelativeLayout rl_message;
+    @BindView(R.id.iv_add)
+    ImageView iv_add;
+    @BindView(R.id.rl_add)
+    RelativeLayout rl_add;
+    @BindView(R.id.iv_discover)
+    ImageView iv_discover;
+    @BindView(R.id.tv_discover)
+    TextView tv_discover;
+    @BindView(R.id.rl_discover)
+    RelativeLayout rl_discover;
+    @BindView(R.id.iv_me)
+    ImageView iv_me;
+    @BindView(R.id.tv_me)
+    TextView tv_me;
+    @BindView(R.id.rl_me)
+    RelativeLayout rl_me;
+    @BindView(R.id.rl_main)
+    RelativeLayout rl_main;
+
     private List<ImageView> imageViewList;
-    private RelativeLayout rl_message;
-    private RelativeLayout rl_discover;
-    private RelativeLayout rl_me;
     private HomeUnloginFragment mFragmentUnloginHome;
     private FragmentManager mFragmentManager;
 
@@ -53,12 +81,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private MeUnloginFragment mFragmentUnloginMe;
     private FragmentTransaction mFragmentTransaction;
     private ArrayList<Fragment> FragmentList;
-    private int FragmentShowIndex=0;
+    private int FragmentShowIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
         BindViews();
         mFragmentManager = getSupportFragmentManager();
@@ -83,7 +112,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (mHomeFragment == null) {
             mHomeFragment = new HomeFragment();
             mFragmentTransaction = mFragmentManager.beginTransaction();
-            if(FragmentList.size()!=0){
+            if (FragmentList.size() != 0) {
                 mFragmentTransaction.hide(FragmentList.get(FragmentShowIndex));
             }
             mFragmentTransaction.add(R.id.ll_fragment, mHomeFragment);
@@ -107,7 +136,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (mFragmentUnloginHome == null) {
             mFragmentUnloginHome = new HomeUnloginFragment();
             mFragmentTransaction = mFragmentManager.beginTransaction();
-            if(FragmentList.size()!=0){
+            if (FragmentList.size() != 0) {
                 mFragmentTransaction.hide(FragmentList.get(FragmentShowIndex));
             }
             mFragmentTransaction.add(R.id.ll_fragment, mFragmentUnloginHome);
@@ -131,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (mFragmentUnloginMessage == null) {
             mFragmentUnloginMessage = new MessageUnloginFragment();
             mFragmentTransaction = mFragmentManager.beginTransaction();
-            if(FragmentList.size()!=0){
+            if (FragmentList.size() != 0) {
                 mFragmentTransaction.hide(FragmentList.get(FragmentShowIndex));
             }
             mFragmentTransaction.add(R.id.ll_fragment, mFragmentUnloginMessage);
@@ -155,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (mFragmentUnloginMe == null) {
             mFragmentUnloginMe = new MeUnloginFragment();
             mFragmentTransaction = mFragmentManager.beginTransaction();
-            if(FragmentList.size()!=0){
+            if (FragmentList.size() != 0) {
                 mFragmentTransaction.hide(FragmentList.get(FragmentShowIndex));
             }
             mFragmentTransaction.add(R.id.ll_fragment, mFragmentUnloginMe);
@@ -189,21 +218,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     private void BindViews() {
         imageViewList = new ArrayList<>();
-        iv_home = (ImageView) findViewById(R.id.iv_home);
         imageViewList.add(iv_home);
-        iv_message = (ImageView) findViewById(R.id.iv_message);
         imageViewList.add(iv_message);
-        iv_discover = (ImageView) findViewById(R.id.iv_discover);
         imageViewList.add(iv_discover);
-        iv_me = (ImageView) findViewById(R.id.iv_me);
         imageViewList.add(iv_me);
-        iv_add = (ImageView) findViewById(R.id.iv_add);
         imageViewList.add(iv_add);
-
-        rl_home = (RelativeLayout) findViewById(R.id.rl_home);
-        rl_message = (RelativeLayout) findViewById(R.id.rl_message);
-        rl_discover = (RelativeLayout) findViewById(R.id.rl_discover);
-        rl_me = (RelativeLayout) findViewById(R.id.rl_me);
     }
 
     @Override
@@ -231,9 +250,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * Process the home item touch event
      */
     private void BottomBarHomeTouchProcess() {
-        if(isLogin){
+        if (isLogin) {
             showHomeFragment();
-        }else {
+        } else {
             showUnloginHomeFragment();
         }
     }
@@ -241,30 +260,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     /**
      * Process the message item touch event
      */
-    private void BottomBarMessageTouchProcess( ) {
+    private void BottomBarMessageTouchProcess() {
         showUnloginMessageFragment();
     }
 
     /**
      * Process the discover item touch event
      */
-    private void BottomBarDiscoverTouchProcess( ) {
-                CancelSelectAll();
-                iv_discover.setSelected(true);
+    private void BottomBarDiscoverTouchProcess() {
+        CancelSelectAll();
+        iv_discover.setSelected(true);
     }
 
     /**
      * Process the me item touch event
      */
-    private void BottomBarMeTouchProcess( ) {
+    private void BottomBarMeTouchProcess() {
         showUnloginMeFragment();
     }
 
     /**
      * Process the add item touch event
      */
-    private void BottomBarAddTouchProcess( ) {
-
+    private void BottomBarAddTouchProcess() {
+        AddMoreActivity.startAddMoreActivity(this);
     }
 
 
@@ -284,4 +303,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    @Override
+    public void onBackPressed() {
+        //TODO 退出到桌面而不结束该页面
+    }
 }

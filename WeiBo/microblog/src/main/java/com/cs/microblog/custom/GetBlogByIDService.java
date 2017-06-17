@@ -1,5 +1,7 @@
 package com.cs.microblog.custom;
 
+import com.cs.microblog.bean.Statuse;
+
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 import rx.Observable;
