@@ -33,6 +33,7 @@
             android:name=".activity.PostBlogActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".activity.AlbumActivity" />
+        <activity android:name=".activity.UserInformationActivity" android:theme="@style/AppTheme" />
 
         <service android:name=".service.BlogPostService" />
     </application>

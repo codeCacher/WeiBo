@@ -1,0 +1,191 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    xmlns:weibo="http://schemas.android.com/apk/com.cs.microblog"
+    android:id="@+id/rl_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.cs.microblog.view.StickyNavLayout
+        android:id="@+id/sn_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/rl_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                fresco:actualImageScaleType="centerCrop"
+                fresco:placeholderImage="@drawable/user_info_back_image"
+                fresco:placeholderImageScaleType="centerCrop"
+                fresco:failureImage="@drawable/user_info_back_image"
+                fresco:failureImageScaleType="centerCrop"
+                android:id="@id/id_stickynavlayout_topview"
+                android:scaleType="centerCrop"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
+
+            <com.facebook.drawee.view.SimpleDraweeView
+                fresco:actualImageScaleType="centerCrop"
+                fresco:placeholderImage="@drawable/avator_default"
+                fresco:placeholderImageScaleType="centerCrop"
+                fresco:failureImage="@drawable/avator_default"
+                fresco:failureImageScaleType="centerCrop"
+                android:id="@+id/sdv_profile_image"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:scaleType="fitCenter"
+                android:layout_above="@+id/tv_name"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="10dp"
+                fresco:roundAsCircle="true" />
+
+            <TextView
+                android:id="@+id/tv_introduce"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/id_stickynavlayout_topview"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="15dp"
+                android:ellipsize="end"
+                android:lines="1"
+                android:text="微博认证：一手视频"
+                android:textColor="@color/colorWhite"
+                android:textSize="12sp" />
+
+            <RelativeLayout
+                android:id="@+id/rl_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/tv_introduce"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="5dp">
+
+                <TextView
+                    android:id="@+id/tv_friends_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_toLeftOf="@+id/v_cut"
+                    android:lines="1"
+                    android:text="关注：100"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="12sp" />
+
+                <View
+                    android:id="@+id/v_cut"
+                    android:layout_width="2px"
+                    android:layout_height="15dp"
+                    android:layout_centerInParent="true"
+                    android:background="@color/colorWhite" />
+
+                <TextView
+                    android:id="@+id/tv_followers_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/v_cut"
+                    android:lines="1"
+                    android:text="粉丝：100"
+                    android:textColor="@color/colorWhite"
+                    android:textSize="12sp" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/rl_count"
+                android:layout_centerHorizontal="true"
+                android:text="我是"
+                android:textColor="@color/colorWhite"
+                android:textSize="15sp" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/rl_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_below="@+id/rl_top"
+            android:background="@color/colorWhite">
+
+            <com.cs.microblog.view.ViewPagerIndicator
+                android:id="@id/id_stickynavlayout_indicator"
+                android:layout_width="250dp"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                weibo:bottom_line_color="@color/colorOrange" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_alignParentBottom="true"
+                android:background="@color/colorGrayWhite"/>
+
+        </RelativeLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@id/id_stickynavlayout_viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="530dp"
+            android:layout_below="@+id/rl_indicator" />
+
+    </com.cs.microblog.view.StickyNavLayout>
+
+    <RelativeLayout
+        android:id="@id/id_stickynavlayout_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_gravity="top"
+        android:background="@color/translucent"
+        app:layout_collapseMode="pin">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="wrap_content"
+            android:textSize="15sp"
+            android:textColor="@color/colorBlack"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/iv_back"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:padding="10dp"
+            android:src="@drawable/btn_back_n" />
+
+        <ImageView
+            android:id="@+id/iv_search"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_toLeftOf="@+id/iv_more"
+            android:padding="10dp"
+            android:src="@drawable/searchbar_second_textfield_search_icon" />
+
+        <ImageView
+            android:id="@+id/iv_more"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:padding="10dp"
+            android:src="@drawable/feed_picture_topguideicon_more" />
+
+        <View
+            android:id="@+id/v_top_bottom_line"
+            android:layout_width="match_parent"
+            android:layout_height="2px"
+            android:layout_alignParentBottom="true"
+            android:background="@color/translucent" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

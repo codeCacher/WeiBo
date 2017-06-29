@@ -14,6 +14,7 @@ import com.cs.microblog.activity.PictureViewerActivity;
 import com.cs.microblog.bean.Repost;
 import com.cs.microblog.bean.RepostList;
 import com.cs.microblog.bean.Statuse;
+import com.cs.microblog.utils.BlogTextUtils;
 import com.cs.microblog.utils.WeiBoUtils;
 import com.cs.microblog.view.CircleImageView;
 import com.cs.microblog.view.EndlessRecyclerViewAdapter;
@@ -116,7 +117,7 @@ public class BlogDetailAdapter extends EndlessRecyclerViewAdapter<EndlessRecycle
             Picasso.with(mContext).load(mStatus.getUser().getProfile_image_url()).into(blogHolder.ivBlogTitle);
 
             blogHolder.tvUserName.setText(mStatus.getUser().getName());
-            blogHolder.tvBlogText.setText(mStatus.getText());
+            BlogTextUtils.setBlogTextContent(mStatus.getText(), mContext, blogHolder.tvBlogText);
             blogHolder.tvBlogInfo.setText(blogInfo);
 
             if (mStatus.getBmiddlePicUrlList() != null) {
@@ -231,7 +232,7 @@ public class BlogDetailAdapter extends EndlessRecyclerViewAdapter<EndlessRecycle
                 Picasso.with(mContext).load(comment.user.profile_image_url).into(commentHolder.ivCommentTitle);
 
                 commentHolder.tvCommentUserName.setText(comment.user.name);
-                commentHolder.tvCommentText.setText(comment.text);
+                BlogTextUtils.setBlogTextContent(comment.text, mContext, commentHolder.tvCommentText);
                 commentHolder.tvCommentInfo.setText(blogInfo);
             } else if(mSelectedList == LIST_REPOST){
                 RepostViewHolder repostHolder = (RepostViewHolder) holder;
@@ -346,9 +347,7 @@ public class BlogDetailAdapter extends EndlessRecyclerViewAdapter<EndlessRecycle
         if (mStatus.getRetweeted_status().getUser() != null) {
             userName = mStatus.getRetweeted_status().getUser().getName();
         }
-        holder.tvRetweetText.setText("@" +
-                userName +
-                ":" +
-                mStatus.getRetweeted_status().getText());
+        BlogTextUtils.setBlogTextContent("@" + userName + ":" + mStatus.getRetweeted_status().getText(),
+                mContext, holder.tvRetweetText);
     }
 }

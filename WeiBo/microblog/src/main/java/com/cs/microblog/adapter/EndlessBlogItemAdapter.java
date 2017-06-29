@@ -15,7 +15,10 @@ import android.widget.TextView;
 import com.cs.microblog.R;
 import com.cs.microblog.activity.BlogDetailActivity;
 import com.cs.microblog.activity.PictureViewerActivity;
+import com.cs.microblog.activity.UserInformationActivity;
 import com.cs.microblog.bean.Statuse;
+import com.cs.microblog.bean.User;
+import com.cs.microblog.utils.BlogTextUtils;
 import com.cs.microblog.utils.WeiBoUtils;
 import com.cs.microblog.view.BlogItemBottomButtonView;
 import com.cs.microblog.view.CircleImageView;
@@ -29,6 +32,8 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static android.R.attr.id;
 
 /**
  * Created by Administrator on 2017/6/6.
@@ -71,9 +76,18 @@ public class EndlessBlogItemAdapter extends EndlessRecyclerViewAdapter<EndlessBl
         String blogInfo = WeiBoUtils.parseBlogTimeAndSourceInfo(statuse);
 
         Picasso.with(context).load(statuse.getUser().getProfile_image_url()).into(holder.ivBlogTitle);
+        holder.ivBlogTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, UserInformationActivity.class);
+                User user = statuse.getUser();
+                intent.putExtra("user",user);
+                context.startActivity(intent);
+            }
+        });
 
         holder.tvUserName.setText(statuse.getUser().getName());
-        holder.tvBlogText.setText(statuse.getText());
+        BlogTextUtils.setBlogTextContent(statuse.getText(),context,holder.tvBlogText);
         holder.tvBlogInfo.setText(blogInfo);
         holder.bibbvRepost.setText(getCountText(statuse.getReposts_count(), "转发"));
         holder.bibbvComment.setText(getCountText(statuse.getComments_count(), "评论"));
@@ -211,10 +225,8 @@ public class EndlessBlogItemAdapter extends EndlessRecyclerViewAdapter<EndlessBl
         if(statuses.get(position).getRetweeted_status().getUser()!=null){
             userName = statuses.get(position).getRetweeted_status().getUser().getName();
         }
-        holder.tvRetweetText.setText("@" +
-                userName +
-                ":" +
-                statuses.get(position).getRetweeted_status().getText());
+        BlogTextUtils.setBlogTextContent("@" + userName + ":" + statuses.get(position).getRetweeted_status().getText(),
+                context,holder.tvRetweetText);
     }
 
     private String getCountText(int count, String defaultText) {
@@ -225,7 +237,7 @@ public class EndlessBlogItemAdapter extends EndlessRecyclerViewAdapter<EndlessBl
         }
     }
 
-    class MyViewHolder extends EndlessRecyclerViewHolder {
+   class MyViewHolder extends EndlessRecyclerViewHolder {
         @BindView(R.id.iv_blog_title)
         CircleImageView ivBlogTitle;
         @BindView(R.id.tv_user_name)

@@ -4,15 +4,15 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.cs.microblog.bean.CommentsShowList;
+import com.cs.microblog.bean.HomeTimelineList;
+import com.cs.microblog.bean.Repost;
+import com.cs.microblog.bean.RepostList;
+import com.cs.microblog.bean.Statuse;
 import com.cs.microblog.custom.Constants;
 import com.cs.microblog.custom.GetBlogByIDService;
 import com.cs.microblog.custom.GetCommentsShowService;
 import com.cs.microblog.custom.GetHomeTimelineService;
 import com.cs.microblog.custom.GetPublicTimelineService;
-import com.cs.microblog.bean.HomeTimelineList;
-import com.cs.microblog.bean.Repost;
-import com.cs.microblog.bean.RepostList;
-import com.cs.microblog.bean.Statuse;
 import com.sina.weibo.sdk.auth.Oauth2AccessToken;
 import com.sina.weibo.sdk.exception.WeiboException;
 import com.sina.weibo.sdk.net.RequestListener;
@@ -21,6 +21,7 @@ import com.sina.weibo.sdk.openapi.UsersAPI;
 import com.sina.weibo.sdk.openapi.legacy.StatusesAPI;
 import com.sina.weibo.sdk.openapi.models.Comment;
 import com.sina.weibo.sdk.openapi.models.CommentList;
+import com.sina.weibo.sdk.openapi.models.StatusList;
 import com.sina.weibo.sdk.openapi.models.User;
 
 import java.text.ParseException;
@@ -323,9 +324,6 @@ public class WeiBoUtils {
             public void call(final Subscriber<? super RepostList> subscriber) {
                 Oauth2AccessToken oauth2AccessToken = new Oauth2AccessToken();
                 oauth2AccessToken.setToken(SharedPreferencesUtils.getString(context, Constants.KEY_ACCESS_TOKEN, ""));
-//                oauth2AccessToken.setUid(SharedPreferencesUtils.getString(context, Constants.KEY_UID, ""));
-//                oauth2AccessToken.setExpiresIn(SharedPreferencesUtils.getString(context, Constants.KEY_EXPIRES_IN, ""));
-
                 StatusesAPI statusesAPI = new StatusesAPI(context, Constants.APP_KEY, oauth2AccessToken);
                 statusesAPI.repostTimeline(id, since_id, max_id, count, page, authorType, new RequestListener() {
                     @Override
@@ -344,7 +342,7 @@ public class WeiBoUtils {
     }
 
 
-    public static Observable<User> getUserInfo(final Context context) {
+    public static Observable<User> getLoginUserInfo(final Context context) {
         return Observable.create(new Observable.OnSubscribe<User>() {
             @Override
             public void call(final Subscriber<? super User> subscriber) {
@@ -368,4 +366,80 @@ public class WeiBoUtils {
             }
         });
     }
+
+    public static Observable<User> getUserInfo(final Context context, final long uid) {
+        return Observable.create(new Observable.OnSubscribe<User>() {
+            @Override
+            public void call(final Subscriber<? super User> subscriber) {
+                Oauth2AccessToken oauth2AccessToken = new Oauth2AccessToken();
+                oauth2AccessToken.setToken(SharedPreferencesUtils.getString(context, Constants.KEY_ACCESS_TOKEN, ""));
+                UsersAPI usersAPI = new UsersAPI(context, Constants.APP_KEY, oauth2AccessToken);
+                usersAPI.show(uid, new RequestListener() {
+                    @Override
+                    public void onComplete(String s) {
+                        User user = User.parse(s);
+                        subscriber.onNext(user);
+                    }
+
+                    @Override
+                    public void onWeiboException(WeiboException e) {
+                        subscriber.onError(e);
+                    }
+                });
+            }
+        });
+    }
+
+    public static Observable<StatusList> getUserTimeLine(final Context context, final long uid,
+                                                         final long since_id, final long max_id,
+                                                         final int count, final int page, final boolean base_app,
+                                                         final int featureType, final boolean trim_user) {
+        return Observable.create(new Observable.OnSubscribe<StatusList>() {
+            @Override
+            public void call(final Subscriber<? super StatusList> subscriber) {
+                Oauth2AccessToken oauth2AccessToken = new Oauth2AccessToken();
+                oauth2AccessToken.setToken(SharedPreferencesUtils.getString(context, Constants.KEY_ACCESS_TOKEN, ""));
+                StatusesAPI statusesAPI = new StatusesAPI(context, Constants.APP_KEY, oauth2AccessToken);
+                statusesAPI.userTimeline(uid, since_id, max_id, count, page, base_app, featureType, trim_user, new RequestListener() {
+                    @Override
+                    public void onComplete(String s) {
+                        StatusList statusList = StatusList.parse(s);
+                        subscriber.onNext(statusList);
+                    }
+
+                    @Override
+                    public void onWeiboException(WeiboException e) {
+                        subscriber.onError(e);
+                    }
+                });
+            }
+        });
+    }
+
+    public static Observable<StatusList> getUserTimeLine(final Context context, final String screen_name,
+                                                         final long since_id, final long max_id,
+                                                         final int count, final int page, final boolean base_app,
+                                                         final int featureType, final boolean trim_user) {
+        return Observable.create(new Observable.OnSubscribe<StatusList>() {
+            @Override
+            public void call(final Subscriber<? super StatusList> subscriber) {
+                Oauth2AccessToken oauth2AccessToken = new Oauth2AccessToken();
+                oauth2AccessToken.setToken(SharedPreferencesUtils.getString(context, Constants.KEY_ACCESS_TOKEN, ""));
+                StatusesAPI statusesAPI = new StatusesAPI(context, Constants.APP_KEY, oauth2AccessToken);
+                statusesAPI.userTimeline(screen_name, since_id, max_id, count, page, base_app, featureType, trim_user, new RequestListener() {
+                    @Override
+                    public void onComplete(String s) {
+                        StatusList statusList = StatusList.parse(s);
+                        subscriber.onNext(statusList);
+                    }
+
+                    @Override
+                    public void onWeiboException(WeiboException e) {
+                        subscriber.onError(e);
+                    }
+                });
+            }
+        });
+    }
+
 }

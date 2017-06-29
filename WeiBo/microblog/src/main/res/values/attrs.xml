@@ -9,4 +9,8 @@
         <attr name="top_src" format="integer"/>
         <attr name="bottom_text" format="string"/>
     </declare-styleable>
+
+    <declare-styleable name="ViewPagerIndicator">
+        <attr name="bottom_line_color" format="color"/>
+    </declare-styleable>
 </resources>

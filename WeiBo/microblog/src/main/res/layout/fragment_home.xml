@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    xmlns:weibo = "http://schemas.android.com/apk/com.cs.microblog"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -28,43 +28,12 @@
         android:layout_marginRight="10dp"
         android:src="@drawable/selector_bar_pop" />
 
-    <RelativeLayout
-        android:id="@+id/rl_tab"
-        android:layout_width="110dp"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:layout_margin="5dp">
-
-        <TextView
-            android:id="@+id/tv_home_like"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:gravity="center"
-            android:text="关注"
-            android:textSize="18sp" />
-
-        <TextView
-            android:id="@+id/tv_home_hot"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:gravity="center"
-            android:text="热门"
-            android:textSize="18sp" />
-
-        <!--<com.facebook.drawee.view.SimpleDraweeView-->
-        <!--android:id="@+id/iv_drag_line"-->
-        <!--android:layout_width="100dp"-->
-        <!--android:layout_height="10dp"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:background="@drawable/drag_line_shape"-->
-        <!--fresco:roundedCornerRadius="5dp" />-->
-
-    </RelativeLayout>
+        <com.cs.microblog.view.ViewPagerIndicator
+            weibo:bottom_line_color="@color/colorOrange"
+            android:id="@+id/blvpi_indicator"
+            android:layout_width="110dp"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"/>
 
     </RelativeLayout>
 

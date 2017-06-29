@@ -17,11 +17,13 @@ public class User implements Parcelable{
     private String description;
     private String url;
     private String profile_image_url;
+    private String cover_image_phone;
     private String domain;
     private String gender;
     private int followers_count;
     private int statuses_count;
     private int favourites_count;
+    private int friends_count;
     private String created_at;
     private boolean following;
     private boolean allow_all_act_msg;
@@ -45,11 +47,13 @@ public class User implements Parcelable{
         description = in.readString();
         url = in.readString();
         profile_image_url = in.readString();
+        cover_image_phone = in.readString();
         domain = in.readString();
         gender = in.readString();
         followers_count = in.readInt();
         statuses_count = in.readInt();
         favourites_count = in.readInt();
+        friends_count = in.readInt();
         created_at = in.readString();
         following = in.readByte() != 0;
         allow_all_act_msg = in.readByte() != 0;
@@ -184,6 +188,14 @@ public class User implements Parcelable{
         return favourites_count;
     }
 
+    public int getFriends_count() {
+        return friends_count;
+    }
+
+    public void setFriends_count(int friends_count) {
+        this.friends_count = friends_count;
+    }
+
     public void setFavourites_count(int favourites_count) {
         this.favourites_count = favourites_count;
     }
@@ -300,11 +312,13 @@ public class User implements Parcelable{
         dest.writeString(description);
         dest.writeString(url);
         dest.writeString(profile_image_url);
+        dest.writeString(cover_image_phone);
         dest.writeString(domain);
         dest.writeString(gender);
         dest.writeInt(followers_count);
         dest.writeInt(statuses_count);
         dest.writeInt(favourites_count);
+        dest.writeInt(friends_count);
         dest.writeString(created_at);
         dest.writeByte((byte) (following ? 1 : 0));
         dest.writeByte((byte) (allow_all_act_msg ? 1 : 0));
@@ -317,5 +331,13 @@ public class User implements Parcelable{
         dest.writeByte((byte) (follow_me ? 1 : 0));
         dest.writeInt(online_status);
         dest.writeInt(bi_followers_count);
+    }
+
+    public String getCover_image_phone() {
+        return cover_image_phone;
+    }
+
+    public void setCover_image_phone(String cover_image_phone) {
+        this.cover_image_phone = cover_image_phone;
     }
 }

@@ -1,6 +1,5 @@
 package com.cs.microblog.fragment;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 
 import android.os.Bundle;
@@ -12,11 +11,12 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.cs.microblog.R;
+import com.cs.microblog.view.ViewPagerIndicator;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -35,9 +35,10 @@ public class HomeFragment extends Fragment {
     private ViewPager vp_blog;
     private ArrayList<Fragment> mFragmentList;
     private MyFragmentAdapter mMyFragmentAdapter;
-    private TextView tv_home_like;
-    private TextView tv_home_hot;
     private Typeface typeface;
+    private ViewPagerIndicator blvpi_indicator;
+    private List<View.OnClickListener> mTitlesOnClickListenterList;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
@@ -45,37 +46,7 @@ public class HomeFragment extends Fragment {
         bindView();
         initData();
         initFragment();
-        tv_home_like.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPage(0);
-            }
-        });
-
-        tv_home_hot.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showPage(1);
-            }
-        });
-        vp_blog.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                if (position == 0) {
-                    showPage(0);
-                } else if (position == 1) {
-                    showPage(1);
-                }
-            }
-            @Override
-            public void onPageScrollStateChanged(int state) {
-            }
-        });
+        showPage(0);
         return view;
     }
 
@@ -83,24 +54,34 @@ public class HomeFragment extends Fragment {
         switch (pageIndex) {
             case 0:
                 vp_blog.setCurrentItem(0);
-                tv_home_like.setTypeface(typeface, Typeface.BOLD);
-                tv_home_like.setTextColor(Color.BLACK);
-                tv_home_hot.setTypeface(typeface, Typeface.NORMAL);
-                tv_home_hot.setTextColor(Color.GRAY);
                 break;
             case 1:
                 vp_blog.setCurrentItem(1);
-                tv_home_like.setTypeface(typeface, Typeface.NORMAL);
-                tv_home_like.setTextColor(Color.GRAY);
-                tv_home_hot.setTypeface(typeface, Typeface.BOLD);
-                tv_home_hot.setTextColor(Color.BLACK);
                 break;
         }
     }
 
     private void initData() {
         typeface = Typeface.create("homeTextType", Typeface.NORMAL);
+
+        mTitlesOnClickListenterList = new ArrayList<>();
+        View.OnClickListener likeOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPage(0);
+            }
+        };
+        View.OnClickListener hotOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showPage(1);
+            }
+        };
+        mTitlesOnClickListenterList.add(likeOnClickListener);
+        mTitlesOnClickListenterList.add(hotOnClickListener);
+        blvpi_indicator.initIndicator(new String[]{"关注","热门"},mTitlesOnClickListenterList,vp_blog);
     }
+
 
     private void initFragment() {
         mFragmentManager = getChildFragmentManager();
@@ -119,8 +100,7 @@ public class HomeFragment extends Fragment {
      */
     private void bindView() {
         vp_blog = (ViewPager) view.findViewById(R.id.vp_blog);
-        tv_home_like = (TextView) view.findViewById(R.id.tv_home_like);
-        tv_home_hot = (TextView) view.findViewById(R.id.tv_home_hot);
+        blvpi_indicator = (ViewPagerIndicator) view.findViewById(R.id.blvpi_indicator);
 
         showPage(0);
     }

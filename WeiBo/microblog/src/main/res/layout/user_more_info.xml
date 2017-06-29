@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:background="@color/colorWhite"
+    android:layout_width="match_parent">
+    <TextView
+        android:gravity="center"
+        android:id="@+id/tv_more_info"
+        android:textSize="15dp"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:textColor="@color/colorGrayBlack"
+        android:layout_centerInParent="true"
+        android:layout_margin="15dp"
+        android:text="更多基本资料" />
+
+</RelativeLayout>
+

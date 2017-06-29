@@ -141,7 +141,7 @@ public class PostBlogActivity extends AppCompatActivity implements View.OnClickL
         }
 
         WeiBoUtils
-                .getUserInfo(this)
+                .getLoginUserInfo(this)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(userSubscriber);
 

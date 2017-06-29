@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -31,7 +32,7 @@ public class EndlessRecyclerView extends LinearLayout {
     public boolean mIsRefreshing;
     private OnDropDownRefeshListener onDropDownRefeshListener;
     private OnPullUpRefeshListener onPullUpRefeshListener;
-    private LinearLayoutManager mLayoutManager;
+    private RecyclerView.LayoutManager mLayoutManager;
     private EndlessRecyclerViewAdapter mAdapter;
     private int mItemCount;
 
@@ -55,7 +56,11 @@ public class EndlessRecyclerView extends LinearLayout {
         registerRefreshListener();
     }
 
-    public void setLayoutManager(LinearLayoutManager layoutManager) {
+    public void addItemDecoration(RecyclerView.ItemDecoration decor){
+        rv_recycle.addItemDecoration(decor);
+    }
+
+    public void setLayoutManager(RecyclerView.LayoutManager layoutManager) {
         this.mLayoutManager = layoutManager;
         rv_recycle.setLayoutManager(layoutManager);
     }
@@ -152,6 +157,14 @@ public class EndlessRecyclerView extends LinearLayout {
         rv_recycle.removeOnScrollListener(onScrollListener);
     }
 
+    public void disableSwipeRefreshLayout(){
+        srl.setEnabled(false);
+    }
+
+    public void enableSwipeRefreshLayout(){
+        srl.setEnabled(true);
+    }
+
     /**
      * set refresh listener
      */
@@ -177,14 +190,19 @@ public class EndlessRecyclerView extends LinearLayout {
 
     /**
      * set add more refresh listener
-     */
+a     */
     private void setAddMoreRefresh() {
         rv_recycle.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 mItemCount = mAdapter.getItemCount();
-                int lastVisibleItemPosition = mLayoutManager.findLastVisibleItemPosition();
+                int lastVisibleItemPosition;
+                if(mLayoutManager instanceof GridLayoutManager){
+                    lastVisibleItemPosition = ((GridLayoutManager)mLayoutManager).findLastVisibleItemPosition();
+                }else {
+                    lastVisibleItemPosition = ((LinearLayoutManager)mLayoutManager).findLastVisibleItemPosition();
+                }
                 if (lastVisibleItemPosition + 1 == mItemCount && dy > 0 && !mIsRefreshing) {
                     mIsRefreshing = true;
                     mAdapter.setFootViewLoading();
