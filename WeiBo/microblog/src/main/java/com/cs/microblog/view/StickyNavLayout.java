@@ -13,8 +13,10 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.OverScroller;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.cs.microblog.R;
+import com.cs.microblog.utils.DisplayUtils;
 
 import rx.Observable;
 import rx.android.schedulers.AndroidSchedulers;
@@ -23,6 +25,7 @@ import rx.functions.Action1;
 
 public class StickyNavLayout extends RelativeLayout implements NestedScrollingParent {
     private static final String TAG = "StickyNavLayout";
+    private static final int MIN_DROPDOWN_DISTENCE = 100;
     private int mToolBarHeight = 0;
     private View mTop;
     private View mNav;
@@ -46,6 +49,8 @@ public class StickyNavLayout extends RelativeLayout implements NestedScrollingPa
     private OnTopHideListener mOnTopHideListener;
     private OnTopShowListener mOnTopShowListener;
     private boolean mTopHide = false;
+    private OnDropDownRefreshListener mOnDropDownRefreshListener;
+    private OnDragRefreshListener mOnDragRefreshListener;
 
     public StickyNavLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -60,9 +65,11 @@ public class StickyNavLayout extends RelativeLayout implements NestedScrollingPa
 
     @Override
     public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
+        mScroller.abortAnimation();
         mNestedChilde = (RecyclerView) target;
         return true;
     }
+
 
     @Override
     public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
@@ -72,6 +79,9 @@ public class StickyNavLayout extends RelativeLayout implements NestedScrollingPa
             ViewGroup.LayoutParams layoutParams = mTop.getLayoutParams();
             layoutParams.height -= dy / 2;
             mTop.setLayoutParams(layoutParams);
+            if (mOnDragRefreshListener != null) {
+                mOnDragRefreshListener.StartDrag();
+            }
         } else if (dy > 0 && mTop.getMeasuredHeight() > mTopDefaultHeight) {
             ViewGroup.LayoutParams layoutParams = mTop.getLayoutParams();
             if (layoutParams.height - dy / 2 < mTopMinHeight) {
@@ -95,10 +105,18 @@ public class StickyNavLayout extends RelativeLayout implements NestedScrollingPa
 
     @Override
     public void onStopNestedScroll(View child) {
-        super.onStopNestedScroll(child);
-
+        mNestedChilde = (RecyclerView) child;
         if (mRefreshDrag || mTop.getMeasuredHeight() > mTopDefaultHeight) {
             mRefreshDrag = false;
+            if (mTop.getMeasuredHeight() - mTopDefaultHeight > MIN_DROPDOWN_DISTENCE * DisplayUtils.getInstance(getContext()).getDisplayDensity()) {
+                if (mOnDropDownRefreshListener != null) {
+                    mOnDropDownRefreshListener.refresh();
+                }
+            } else {
+                if (mOnDragRefreshListener != null) {
+                    mOnDragRefreshListener.OnRelease();
+                }
+            }
             flyBack();
         }
     }
@@ -131,11 +149,10 @@ public class StickyNavLayout extends RelativeLayout implements NestedScrollingPa
     }
 
     @Override
-    public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
+    public boolean onNestedPreFling(final View target, float velocityX, float velocityY) {
         mNestedChilde = (RecyclerView) target;
         mVelocityY = velocityY;
         mLastScrollY = getScrollY();
-
         fling((int) velocityY);
         return true;
     }
@@ -155,6 +172,7 @@ public class StickyNavLayout extends RelativeLayout implements NestedScrollingPa
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        super.onTouchEvent(event);
         initVelocityTrackerIfNotExists();
         mVelocityTracker.addMovement(event);
         int action = event.getAction();
@@ -173,6 +191,9 @@ public class StickyNavLayout extends RelativeLayout implements NestedScrollingPa
                     ViewGroup.LayoutParams layoutParams = mTop.getLayoutParams();
                     layoutParams.height += dy / 2;
                     mTop.setLayoutParams(layoutParams);
+                    if (mOnDragRefreshListener != null) {
+                        mOnDragRefreshListener.StartDrag();
+                    }
                 } else if (dy < 0 && mTop.getMeasuredHeight() > mTopDefaultHeight) {
                     ViewGroup.LayoutParams layoutParams = mTop.getLayoutParams();
                     if (layoutParams.height + dy / 2 < mTopMinHeight) {
@@ -196,6 +217,15 @@ public class StickyNavLayout extends RelativeLayout implements NestedScrollingPa
             case MotionEvent.ACTION_UP:
                 if (mRefreshDrag) {
                     mRefreshDrag = false;
+                    if (mTop.getMeasuredHeight() - mTopDefaultHeight > MIN_DROPDOWN_DISTENCE * DisplayUtils.getInstance(getContext()).getDisplayDensity()) {
+                        if (mOnDropDownRefreshListener != null) {
+                            mOnDropDownRefreshListener.refresh();
+                        }
+                    } else {
+                        if (mOnDragRefreshListener != null) {
+                            mOnDragRefreshListener.OnRelease();
+                        }
+                    }
                     flyBack();
                 } else {
                     mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
@@ -333,5 +363,23 @@ public class StickyNavLayout extends RelativeLayout implements NestedScrollingPa
 
     public void setOnTopShowListener(OnTopShowListener onTopShowListener) {
         this.mOnTopShowListener = onTopShowListener;
+    }
+
+    public interface OnDropDownRefreshListener {
+        void refresh();
+    }
+
+    public void setOnDropDownRefreshListener(OnDropDownRefreshListener listener) {
+        this.mOnDropDownRefreshListener = listener;
+    }
+
+    public interface OnDragRefreshListener {
+        void StartDrag();
+
+        void OnRelease();
+    }
+
+    public void setOnDragRefreshListener(OnDragRefreshListener listener) {
+        this.mOnDragRefreshListener = listener;
     }
 }

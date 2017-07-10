@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.cs.microblog.R;
 import com.cs.microblog.activity.BlogDetailActivity;
 import com.cs.microblog.activity.PictureViewerActivity;
+import com.cs.microblog.activity.PostBlogActivity;
 import com.cs.microblog.activity.UserInformationActivity;
 import com.cs.microblog.bean.Statuse;
 import com.cs.microblog.bean.User;
@@ -167,6 +168,16 @@ public class EndlessBlogItemAdapter extends EndlessRecyclerViewAdapter<EndlessBl
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context,BlogDetailActivity.class);
+                intent.putExtra("status",statuse);
+                context.startActivity(intent);
+            }
+        });
+
+        holder.bibbvRepost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, PostBlogActivity.class);
+                intent.putExtra("TAG",PostBlogActivity.TAG_REPOST);
                 intent.putExtra("status",statuse);
                 context.startActivity(intent);
             }

@@ -1,5 +1,7 @@
 package com.cs.microblog.fragment;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -68,6 +70,11 @@ public class HomeLikeFragment extends Fragment {
                     erv.setDropDownRefreshState(false);
                     return;
                 }
+
+                if(response.body().getStatuses().size()>0){
+                    SharedPreferences sp = getContext().getSharedPreferences("StatusesCache", Context.MODE_PRIVATE);
+                }
+
                 mStatuses.clear();
                 mStatuses.addAll(response.body().getStatuses());
                 erv.finishDropDownRefreshOnSuccess(mActivity);

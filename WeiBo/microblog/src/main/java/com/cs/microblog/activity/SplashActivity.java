@@ -26,12 +26,12 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 //TODO TEST
-                Intent intent = new Intent(getApplicationContext(), UserInformationActivity.class);
-                intent.putExtra("UID",0);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                getApplicationContext().startActivity(intent);
+//                Intent intent = new Intent(getApplicationContext(), UserInformationActivity.class);
+//                intent.putExtra("UID",0);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                getApplicationContext().startActivity(intent);
 
-//                MainActivity.openMainActivity(getApplicationContext(), Intent.FLAG_ACTIVITY_NEW_TASK);
+                MainActivity.openMainActivity(getApplicationContext(), Intent.FLAG_ACTIVITY_NEW_TASK);
                 finish();
             }
         };

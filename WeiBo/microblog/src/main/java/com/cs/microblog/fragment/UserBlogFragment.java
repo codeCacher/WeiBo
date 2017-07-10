@@ -140,4 +140,34 @@ public class UserBlogFragment extends Fragment {
         });
     }
 
+    public interface OnRefreshCompleteListener{
+        void OnRefreshComplete();
+    }
+
+    public void refreshContent(final OnRefreshCompleteListener listener){
+        WeiBoUtils.getHomeTimelineLists(SharedPreferencesUtils.getString(getContext(),
+                Constants.KEY_ACCESS_TOKEN, ""), 0, new WeiBoUtils.CallBack() {
+            @Override
+            public void onSuccess(Call<HomeTimelineList> call, Response<HomeTimelineList> response) {
+                if (response.body() == null) {
+                    erv.setDropDownRefreshState(false);
+                    listener.OnRefreshComplete();
+                    return;
+                }
+                mStatuses.clear();
+                mStatuses.addAll(response.body().getStatuses());
+                erv.finishDropDownRefreshOnSuccess(mActivity);
+                listener.OnRefreshComplete();
+            }
+
+            @Override
+            public void onFailure(Call<HomeTimelineList> call, Throwable t) {
+                Toast.makeText(getContext(), "没有网络了", Toast.LENGTH_SHORT).show();
+                erv.finishDropDownRefreshOnFailure(mActivity);
+                listener.OnRefreshComplete();
+            }
+        });
+    }
+
+
 }

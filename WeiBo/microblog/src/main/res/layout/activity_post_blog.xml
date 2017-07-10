@@ -86,14 +86,59 @@
                 android:hint="分享新鲜事..."
                 android:padding="10dp" />
 
-            <android.support.v7.widget.RecyclerView
-                android:visibility="invisible"
-                android:id="@+id/rv_selected_picture"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="20dp" />
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.RecyclerView
+                    android:visibility="invisible"
+                    android:id="@+id/rv_selected_picture"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="20dp" />
+                <RelativeLayout
+                    android:visibility="invisible"
+                    android:id="@+id/rl_repost"
+                    android:background="@color/colorGrayWhite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="20dp" >
+
+                    <com.facebook.drawee.view.SimpleDraweeView
+                        android:layout_margin="10dp"
+                        android:layout_width="50dp"
+                        android:id="@+id/iv_repost_user_image"
+                        android:layout_height="50dp" />
+
+                    <TextView
+                        android:id="@+id/tv_repost_user_name"
+                        android:lines="1"
+                        android:layout_marginTop="10dp"
+                        android:text="/@cs"
+                        android:textStyle="bold"
+                        android:textSize="17sp"
+                        android:layout_toRightOf="@+id/iv_repost_user_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/tv_repost_text"
+                        android:layout_below="@+id/tv_repost_user_name"
+                        android:lines="2"
+                        android:ellipsize="end"
+                        android:textSize="13sp"
+                        android:text="悠悠报客流：昨日回顾线网总客流量为789万人次，据广州市气象台预测，今日白天多云，有中雷雨"
+                        android:layout_toRightOf="@+id/iv_repost_user_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </RelativeLayout>
+            </FrameLayout>
+
         </LinearLayout>
 
     </ScrollView>

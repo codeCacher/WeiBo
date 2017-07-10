@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -26,9 +27,11 @@ import android.widget.Toast;
 import com.cs.microblog.R;
 import com.cs.microblog.adapter.SelectPhotoAdapter;
 import com.cs.microblog.bean.Photo;
+import com.cs.microblog.bean.Statuse;
 import com.cs.microblog.service.BlogPostService;
 import com.cs.microblog.service.IPostBlog;
 import com.cs.microblog.utils.WeiBoUtils;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.sina.weibo.sdk.openapi.models.User;
 
 import java.util.ArrayList;
@@ -82,9 +85,21 @@ public class PostBlogActivity extends AppCompatActivity implements View.OnClickL
     LinearLayout llBottom;
     @BindView(R.id.rv_selected_picture)
     RecyclerView rvSelectedPicture;
+    @BindView(R.id.iv_repost_user_image)
+    SimpleDraweeView ivRepostUserImage;
+    @BindView(R.id.tv_repost_user_name)
+    TextView tvRepostUserName;
+    @BindView(R.id.tv_repost_text)
+    TextView tvRepostText;
+    @BindView(R.id.rl_repost)
+    RelativeLayout rlRepost;
 
-    private static final int TAG_POST_TEXT = 0;
-    private static final int TAG_POST_IMAGE = 1;
+    public static final int TAG_POST_TEXT = 0;
+    public static final int TAG_POST_IMAGE = 1;
+    public static final int TAG_POST_PHOTO = 2;
+    public static final int TAG_REPOST = 3;
+
+
 
     private IPostBlog mBlogPostService;
     private int mTag;
@@ -112,6 +127,7 @@ public class PostBlogActivity extends AppCompatActivity implements View.OnClickL
         }
     };
     private SelectPhotoAdapter mSelectPhotoAdapter;
+    private Statuse statuse;
 
     private class MyServiceConnection implements ServiceConnection {
 
@@ -137,7 +153,20 @@ public class PostBlogActivity extends AppCompatActivity implements View.OnClickL
         mTag = getIntent().getIntExtra("TAG", 0);
         if (mTag == TAG_POST_IMAGE) {
             Intent intent = new Intent(PostBlogActivity.this, AlbumActivity.class);
+            intent.putExtra("TAG", TAG_POST_IMAGE);
             startActivityForResult(intent, 0);
+        } else if (mTag == TAG_POST_PHOTO) {
+            Intent intent = new Intent(PostBlogActivity.this, AlbumActivity.class);
+            intent.putExtra("TAG", TAG_POST_PHOTO);
+            startActivityForResult(intent, 0);
+        } else if (mTag == TAG_REPOST) {
+            statuse = getIntent().getParcelableExtra("status");
+            if(statuse!=null){
+                rlRepost.setVisibility(View.VISIBLE);
+                ivRepostUserImage.setImageURI(statuse.getUser().getProfile_image_url());
+                tvRepostUserName.setText("@"+statuse.getUser().getName());
+                tvRepostText.setText(statuse.getText());
+            }
         }
 
         WeiBoUtils
@@ -181,7 +210,7 @@ public class PostBlogActivity extends AppCompatActivity implements View.OnClickL
                 mSelectPhotoAdapter.notifyItemRemoved(position);
                 mSelectPhotoAdapter.notifyItemRangeChanged(position, mSelectedPhoto.size() + 1);
 
-                if(mSelectedPhoto.size()==0){
+                if (mSelectedPhoto.size() == 0) {
                     btSend.setBackgroundResource(R.drawable.compose_photopreview_btn);
                     btSend.setTextColor(getResources().getColor(R.color.colorGrayBlack));
                 }
@@ -236,57 +265,62 @@ public class PostBlogActivity extends AppCompatActivity implements View.OnClickL
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.bt_send:
-                int length = etText.getText().toString().length();
-                if (length == 0 && mSelectedPhoto.size() == 0) {
-                    Toast.makeText(this, "请输入微博内容", Toast.LENGTH_SHORT).show();
-                    return;
-                } else if (length > 140) {
-                    Toast.makeText(this, "文字不可超过140字", Toast.LENGTH_SHORT).show();
-                    return;
-                } else if (mSelectedPhoto.size() > 1) {
-                    Toast.makeText(this, "由于微博API限制，只能发布一张图片", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (mSelectedPhoto.size() == 0) {
-                    mBlogPostService.postTextBlog(etText.getText().toString(), "0.0", "0.0");
-                } else {
-                    //发送文字和图片微博
-                    WindowManager WM = (WindowManager) getSystemService(WINDOW_SERVICE);
-                    int screenWidth = WM.getDefaultDisplay().getWidth();
-                    int screenHeight = WM.getDefaultDisplay().getHeight();
-                    Photo photo = mSelectedPhoto.get(0);
-                    String imagePath = photo.getImagePath();
-                    BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inJustDecodeBounds = true;
-                    BitmapFactory.decodeFile(imagePath, options);
-                    Bitmap bitmap;
-                    if (options.outWidth > screenWidth || options.outHeight > screenHeight) {
-                        options.inJustDecodeBounds = false;
-                        options.inSampleSize = (int) Math.max(options.outWidth * 1f / screenWidth, options.outHeight * 1f / screenHeight);
-                        try {
-                            bitmap = BitmapFactory.decodeFile(imagePath, options);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Toast.makeText(getApplicationContext(), "图片太大了", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                    } else {
-                        try {
-                            bitmap = BitmapFactory.decodeFile(imagePath);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Toast.makeText(getApplicationContext(), "图片太大了", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
+                if(mTag==TAG_REPOST){
+                    mBlogPostService.repostBlog(statuse.getId(),etText.getText().toString(),0);
+                }else {
+                    int length = etText.getText().toString().length();
+                    if (length == 0 && mSelectedPhoto.size() == 0) {
+                        Toast.makeText(this, "请输入微博内容", Toast.LENGTH_SHORT).show();
+                        return;
+                    } else if (length > 140) {
+                        Toast.makeText(this, "文字不可超过140字", Toast.LENGTH_SHORT).show();
+                        return;
+                    } else if (mSelectedPhoto.size() > 1) {
+                        Toast.makeText(this, "由于微博API限制，只能发布一张图片", Toast.LENGTH_SHORT).show();
+                        return;
                     }
-                    mBlogPostService.postTextAndPhotoBlog(etText.getText().toString(), bitmap, "0.0", "0.0");
+                    if (mSelectedPhoto.size() == 0) {
+                        mBlogPostService.postTextBlog(etText.getText().toString(), "0.0", "0.0");
+                    } else {
+                        //发送文字和图片微博
+                        WindowManager WM = (WindowManager) getSystemService(WINDOW_SERVICE);
+                        int screenWidth = WM.getDefaultDisplay().getWidth();
+                        int screenHeight = WM.getDefaultDisplay().getHeight();
+                        Photo photo = mSelectedPhoto.get(0);
+                        String imagePath = photo.getImagePath();
+                        BitmapFactory.Options options = new BitmapFactory.Options();
+                        options.inJustDecodeBounds = true;
+                        BitmapFactory.decodeFile(imagePath, options);
+                        Bitmap bitmap;
+                        if (options.outWidth > screenWidth || options.outHeight > screenHeight) {
+                            options.inJustDecodeBounds = false;
+                            options.inSampleSize = (int) Math.max(options.outWidth * 1f / screenWidth, options.outHeight * 1f / screenHeight);
+                            try {
+                                bitmap = BitmapFactory.decodeFile(imagePath, options);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(getApplicationContext(), "图片太大了", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        } else {
+                            try {
+                                bitmap = BitmapFactory.decodeFile(imagePath);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(getApplicationContext(), "图片太大了", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                        }
+                        mBlogPostService.postTextAndPhotoBlog(etText.getText().toString(), bitmap, "0.0", "0.0");
+                    }
                 }
-
                 PostBlogActivity.this.finish();
 
                 break;
             case R.id.iv_picture:
-                startAlbumActivity();
+                if(mTag!=TAG_REPOST){
+                    startAlbumActivity();
+                }
                 break;
         }
     }

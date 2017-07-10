@@ -1,5 +1,6 @@
 package com.cs.microblog.activity;
 
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -141,6 +142,46 @@ public class UserInformationActivity extends AppCompatActivity {
                 ivSearch.setImageResource(R.drawable.searchbar_second_textfield_search_icon);
                 ivMore.setImageResource(R.drawable.toolbar_more);
                 tvTitle.setText("");
+            }
+        });
+        snRoot.setOnDropDownRefreshListener(new StickyNavLayout.OnDropDownRefreshListener() {
+            @Override
+            public void refresh() {
+                int currentItem = vpContent.getCurrentItem();
+                ivMore.setImageResource(R.drawable.loading_anima);
+                AnimationDrawable background = (AnimationDrawable) ivMore.getDrawable();
+                background.start();
+                if(currentItem==1){
+                    ((UserBlogFragment)mFragmentList.get(1)).refreshContent(new UserBlogFragment.OnRefreshCompleteListener() {
+                        @Override
+                        public void OnRefreshComplete() {
+                            ivMore.setImageResource(R.drawable.feed_picture_topguideicon_more);
+                        }
+                    });
+                }else if(currentItem==2){
+                    ((UserPhotoFragment)mFragmentList.get(2)).refreshContent(new UserBlogFragment.OnRefreshCompleteListener() {
+                        @Override
+                        public void OnRefreshComplete() {
+                            ivMore.setImageResource(R.drawable.feed_picture_topguideicon_more);
+                        }
+                    });
+                }else {
+                    //刷新用户信息
+                    ivMore.setImageResource(R.drawable.feed_picture_topguideicon_more);
+                }
+            }
+        });
+
+        snRoot.setOnDragRefreshListener(new StickyNavLayout.OnDragRefreshListener() {
+            @Override
+            public void StartDrag() {
+                ivMore.setImageResource(R.drawable.loading_01);
+
+            }
+
+            @Override
+            public void OnRelease() {
+                ivMore.setImageResource(R.drawable.feed_picture_topguideicon_more);
             }
         });
 

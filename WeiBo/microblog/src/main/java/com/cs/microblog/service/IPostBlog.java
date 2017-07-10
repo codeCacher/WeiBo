@@ -9,4 +9,5 @@ import android.graphics.Bitmap;
 public interface IPostBlog {
     void postTextBlog(String content, String lat, String lon);
     void postTextAndPhotoBlog(String content, Bitmap bitmap, String lat, String lon);
+    void repostBlog(long id, String status, int commentType);
 }

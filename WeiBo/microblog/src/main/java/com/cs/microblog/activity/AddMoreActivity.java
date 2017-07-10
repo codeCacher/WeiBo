@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -46,6 +47,8 @@ public class AddMoreActivity extends Activity implements View.OnClickListener {
     RelativeLayout rlItem;
     @BindView(R.id.rl_root)
     LinearLayout rlRoot;
+    @BindView(R.id.iv_slogan)
+    ImageView ivSlogan;
     private List<View> mViewList;
 
     @Override
@@ -123,8 +126,10 @@ public class AddMoreActivity extends Activity implements View.OnClickListener {
     private void setItemOnClickListener(View pageView1, View view1) {
         View postText = pageView1.findViewById(R.id.post_text);
         View postImage = pageView1.findViewById(R.id.post_image);
+        View postPhoto = pageView1.findViewById(R.id.post_photo);
         postText.setOnClickListener(this);
         postImage.setOnClickListener(this);
+        postPhoto.setOnClickListener(this);
     }
 
     @Override
@@ -136,14 +141,20 @@ public class AddMoreActivity extends Activity implements View.OnClickListener {
                     case R.id.post_text:
                         AddMoreActivity.this.finish();
                         Intent postTextIntent = new Intent(AddMoreActivity.this, PostBlogActivity.class);
-                        postTextIntent.putExtra("TAG",0);
+                        postTextIntent.putExtra("TAG", PostBlogActivity.TAG_POST_TEXT);
                         startActivity(postTextIntent);
                         break;
                     case R.id.post_image:
                         AddMoreActivity.this.finish();
                         Intent imageIntent = new Intent(AddMoreActivity.this, PostBlogActivity.class);
-                        imageIntent.putExtra("TAG",1);
+                        imageIntent.putExtra("TAG", PostBlogActivity.TAG_POST_IMAGE);
                         startActivity(imageIntent);
+                        break;
+                    case R.id.post_photo:
+                        AddMoreActivity.this.finish();
+                        Intent photoIntent = new Intent(AddMoreActivity.this, PostBlogActivity.class);
+                        photoIntent.putExtra("TAG", PostBlogActivity.TAG_POST_PHOTO);
+                        startActivity(photoIntent);
                         break;
                 }
             }
@@ -177,6 +188,7 @@ public class AddMoreActivity extends Activity implements View.OnClickListener {
     private void setStartAnimation() {
         AlphaAnimation alphaAm = new AlphaAnimation(0, 1);
         alphaAm.setDuration(500);
+        LinearInterpolator linearInterpolator = new LinearInterpolator();
 
         TranslateAnimation tranAm0 = new TranslateAnimation(
                 Animation.RELATIVE_TO_SELF, 0,
@@ -185,12 +197,16 @@ public class AddMoreActivity extends Activity implements View.OnClickListener {
                 Animation.RELATIVE_TO_SELF, -0.05f);
         tranAm0.setDuration(500);
 
+        tranAm0.setInterpolator(linearInterpolator);
+
         TranslateAnimation tranAm1 = new TranslateAnimation(
                 Animation.RELATIVE_TO_SELF, 0,
                 Animation.RELATIVE_TO_SELF, 0,
                 Animation.RELATIVE_TO_SELF, -0.05f,
                 Animation.RELATIVE_TO_SELF, 0);
         tranAm1.setDuration(500);
+
+        tranAm1.setInterpolator(linearInterpolator);
 
         AnimationSet amSet = new AnimationSet(false);
         amSet.addAnimation(tranAm0);

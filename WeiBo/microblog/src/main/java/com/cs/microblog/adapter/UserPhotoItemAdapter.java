@@ -41,7 +41,7 @@ public class UserPhotoItemAdapter extends EndlessRecyclerViewAdapter<UserPhotoIt
         mPhotoUrlList = new ArrayList<>();
         if (mStatuses != null) {
             for (Statuse s : mStatuses) {
-                mPhotoUrlList.addAll(s.getBmiddlePicUrlList());
+                mPhotoUrlList.addAll(s.getThumbmailPicUrlList());
             }
         }
     }
@@ -51,7 +51,7 @@ public class UserPhotoItemAdapter extends EndlessRecyclerViewAdapter<UserPhotoIt
         mPhotoUrlList.clear();
         if (mStatuses != null) {
             for (Statuse s : mStatuses) {
-                mPhotoUrlList.addAll(s.getBmiddlePicUrlList());
+                mPhotoUrlList.addAll(s.getThumbmailPicUrlList());
             }
         }
         return mPhotoUrlList.size();

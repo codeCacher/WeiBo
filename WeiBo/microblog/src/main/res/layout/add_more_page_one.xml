@@ -13,6 +13,7 @@
             android:layout_weight="1"
             android:layout_height="wrap_content"/>
         <com.cs.microblog.view.AddMoreItem
+            android:id="@+id/post_photo"
             weibo:top_src="@drawable/tabbar_compose_capture_neo"
             weibo:bottom_text="拍照"
             android:layout_width="0dp"

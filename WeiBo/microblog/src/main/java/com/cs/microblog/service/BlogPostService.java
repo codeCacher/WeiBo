@@ -128,6 +128,46 @@ public class BlogPostService extends Service {
 
         });
     }
+    /**
+     * 转发一条微博。
+     *
+     * @param id            要转发的微博ID
+     * @param status        添加的转发文本，内容不超过140个汉字，不填则默认为“转发微博”
+     * @param commentType   是否在转发的同时发表评论，0：否、1：评论给当前微博、2：评论给原微博、3：都评论，默认为0
+     */
+    private void RepostBlog(long id, String status, int commentType){
+        Oauth2AccessToken oauth2AccessToken = new Oauth2AccessToken();
+        oauth2AccessToken.setToken(SharedPreferencesUtils.getString(getApplicationContext(), Constants.KEY_ACCESS_TOKEN, ""));
+        StatusesAPI mStatusesAPI = new StatusesAPI(this, Constants.APP_KEY, oauth2AccessToken);
+
+        final NotificationUtils notificationUtils = NotificationUtils.getInstance(getApplicationContext());
+        notificationUtils.sendNotification(0,"正在发送...","","正在发送...");
+
+        mStatusesAPI.repost(id, status, commentType,new RequestListener() {
+            @Override
+            public void onComplete(String s) {
+                notificationUtils.sendNotification(0,"微博发送成功","","微博发送成功");
+                (new Handler()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        notificationUtils.cancelNotification(0);
+                    }
+                },5000);
+            }
+
+            @Override
+            public void onWeiboException(WeiboException e) {
+                notificationUtils.sendNotification(0,"微博发送失败","","微博发送失败");
+                (new Handler()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        notificationUtils.cancelNotification(0);
+                    }
+                },5000);
+            }
+
+        });
+    }
 
     private class MyIBinder extends Binder implements IPostBlog{
 
@@ -139,6 +179,11 @@ public class BlogPostService extends Service {
         @Override
         public void postTextAndPhotoBlog(String content, Bitmap bitmap, String lat, String lon) {
             PostTextAndPhotoBlog(content, bitmap, lat, lon);
+        }
+
+        @Override
+        public void repostBlog(long id, String status, int commentType){
+            RepostBlog(id, status, commentType);
         }
     }
 }
