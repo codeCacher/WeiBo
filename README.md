@@ -11,4 +11,7 @@
     7.微博用户查看
 # 登录
     根据新浪微博API文档使用Retrofit发送网络请求，使用WebView进入登录界面登录
-![image](https://github.com/codeCacher/Picture/blob/7d0195bcefaa01359840811da3c963bc346c2bcd/thumb/Screenshot_2017-08-01-16-36-11.png?raw=true)
+![image](https://github.com/codeCacher/Picture/blob/7d0195bcefaa01359840811da3c963bc346c2bcd/thumb/Screenshot_2017-08-01-16-36-11.png?raw=true)![image](https://github.com/codeCacher/Picture/blob/7d0195bcefaa01359840811da3c963bc346c2bcd/thumb/Screenshot_2017-08-01-16-36-35.png?raw=true)
+# 主页
+    用户关注微博和热门微博的展示
+![image](https://github.com/codeCacher/Picture/blob/7d0195bcefaa01359840811da3c963bc346c2bcd/thumb/Screenshot_2017-08-01-16-37-08.png)
