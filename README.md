@@ -15,3 +15,5 @@
 # 主页
     用户关注微博和热门微博的展示
 ![image](https://github.com/codeCacher/Picture/blob/7d0195bcefaa01359840811da3c963bc346c2bcd/thumb/Screenshot_2017-08-01-16-37-08.png)
+    普通图片和gif图片显示
+![image](https://raw.githubusercontent.com/codeCacher/Picture/7a1d9b60cecd882211c8d7950920d722b323a23c/thumb/Screenshot_2017-08-02-14-32-56.png)
